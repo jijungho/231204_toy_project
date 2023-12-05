@@ -135,10 +135,10 @@ export default function Main() {
                 </ul>
               </li>
               <li>
-                <a href="#!">TEMPLATES</a>
+                <a href="#!" className='hover:font-6'>TEMPLATES</a>
               </li>
               <li>
-                <a href="#!">TRASH</a>
+                <a href="#!" className='hover:font-2'>TRASH</a>
               </li>
             </ul>
           </nav>
