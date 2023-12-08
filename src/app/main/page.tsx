@@ -10,9 +10,11 @@ import Editor from "@/app/components/editor";
 import NoteAddModal from "@/app/components/NoteAddModal";
 import NoteBook from "@/app/components/notebooks/NoteBook";
 import NoteDeleteModal from "../components/NoteDeleteModal";
+import NoteDetail from "../components/notebooks/NoteDetail";
 
 interface Memo {
   title: string;
+  idx: number;
 }
 
 export default function Page() {
@@ -32,9 +34,12 @@ export default function Page() {
   const [isTodoComponent, setIsTodoComponent] = useState(false);
   const [isUnsyncedComponent, setIsUnsyncedComponent] = useState(false);
   const [isNoteBookComponent, setIsNoteBookComponent] = useState(false);
+  const [isNoteBookDetailComponent, setIsNoteBookDetailComponent] = useState(false);
 
   // 메뉴 토글 상태 변수
   const [isMenuOpen, setIsMenuOpen] = useState(true);
+
+  const [memoList, setMemoList] = useState<Memo[]>([]);
 
   // Menu 토글 이벤트
   const AllNotesToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -53,23 +58,36 @@ export default function Page() {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const [memoList, setMemoList] = useState<Memo[]>([]);
-
-  const onClickMemoDelete = (idx: any) => {
-    const updatedMemoList = [...memoList];
-    updatedMemoList.splice(idx, 1);
-
-    localStorage.setItem("noteTitle", JSON.stringify(updatedMemoList));
-
-    setMemoList(updatedMemoList);
-
-    onClickCloseNoteDelModal();
-  };
-
+  // 로컬에 저장된 데이터를 반영해주는 useEffect 훅
   useEffect(() => {
-    const titleList = JSON.parse(localStorage.getItem("noteTitle") || "[]");
-    setMemoList(titleList);
-  });
+    const loadMemoList = () => {
+      const titleList = JSON.parse(localStorage.getItem("noteList") || "[]");
+      setMemoList(titleList);
+    };
+
+    loadMemoList();
+
+    const intervalId = setInterval(() => {
+      loadMemoList();
+    }, 10);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  // 로컬에 저장된 데이터 삭제하는 클릭 이벤트
+  // const onClickMemoDelete = (idx: any) => {
+  //   const updatedMemoList = [...memoList];
+  //   updatedMemoList.splice(idx, 1);
+
+  //   localStorage.setItem("noteTitle", JSON.stringify(updatedMemoList));
+
+  //   setMemoList(updatedMemoList);
+
+  //   onClickCloseNoteDelModal();
+  //   console.log(idx);
+  // };
+
+  const [selectedIdx, setSelectedIdx] = useState(null);
 
   // 사이드 메뉴 클릭 시 상태 업데이트
   const onClickAllNotesMenu = () => {
@@ -78,6 +96,7 @@ export default function Page() {
     setIsTodoComponent(false);
     setIsUnsyncedComponent(false);
     setIsNoteBookComponent(false);
+    setIsNoteBookDetailComponent(false);
   };
   const onClickUncategoriedMenu = () => {
     setIsUncategoriedComponent(true);
@@ -85,6 +104,7 @@ export default function Page() {
     setIsTodoComponent(false);
     setIsUnsyncedComponent(false);
     setIsNoteBookComponent(false);
+    setIsNoteBookDetailComponent(false);
   };
   const onClickTodoMenu = () => {
     setIsTodoComponent(true);
@@ -92,6 +112,7 @@ export default function Page() {
     setIsAllNotesComponent(false);
     setIsUnsyncedComponent(false);
     setIsNoteBookComponent(false);
+    setIsNoteBookDetailComponent(false);
   };
   const onClickUnsyncedMenu = () => {
     setIsUnsyncedComponent(true);
@@ -99,6 +120,7 @@ export default function Page() {
     setIsTodoComponent(false);
     setIsAllNotesComponent(false);
     setIsNoteBookComponent(false);
+    setIsNoteBookDetailComponent(false);
   };
   const onClickNoteBookMenu = () => {
     setIsNoteBookComponent(true);
@@ -106,9 +128,19 @@ export default function Page() {
     setIsUncategoriedComponent(false);
     setIsTodoComponent(false);
     setIsAllNotesComponent(false);
+    setIsNoteBookDetailComponent(false);
   };
-  // const handleAllNotesLinkClick = () => {
-  // };
+  const onClickNoteBookDetail = (idx: any) => {
+    setIsNoteBookDetailComponent(true);
+    setIsNoteBookComponent(false);
+    setIsUnsyncedComponent(false);
+    setIsUncategoriedComponent(false);
+    setIsTodoComponent(false);
+    setIsAllNotesComponent(false);
+
+    setSelectedIdx(idx);
+    console.log(idx);
+  };
   // const handleAllNotesLinkClick = () => {
   // };
   // const handleAllNotesLinkClick = () => {
@@ -133,8 +165,28 @@ export default function Page() {
   };
 
   // 노트 삭제 모달 열기
-  const onClickOpenNoteDelModal = () => {
+  const onClickOpenNoteDelModal = (idx: any) => {
     setIsNoteDeleteModalOpen(true);
+
+    // idx를 객체 형식으로 DeleteNote 로컬스토리지에 저장
+    localStorage.setItem("DeleteNote", JSON.stringify({ idx }));
+
+    // console.log("idx = ", idx);
+    // console.log("memoList = ", memoList);
+  };
+
+  // 로컬에 저장된 데이터 삭제하는 클릭 이벤트
+  const onClickMemoDelete = () => {
+    const noteToDelete = JSON.parse(localStorage.getItem("DeleteNote") || "{}");
+    const updatedMemoList = memoList.filter((memo) => memo.idx !== noteToDelete.idx);
+
+    localStorage.setItem("noteList", JSON.stringify(updatedMemoList));
+    setMemoList(updatedMemoList);
+
+    onClickCloseNoteDelModal();
+
+    // console.log(noteToDelete.id);
+    // console.log(updatedMemoList);
   };
 
   // 노트 삭제 모달 닫기
@@ -286,10 +338,15 @@ export default function Page() {
                       {/* 내가 입력한 메모가 저장되야함 */}
                       {memoList.map((item, idx) => (
                         <li style={NoteBooksMenu} key={idx} className="py-2 pl-6 pr-4 h-[40px] hover:bg-gray-100 justify-between">
-                          <a href="#!" className={`truncate ${NotoBookNaviBarOption}`}>
+                          {/* <a href="#!" onClick={onClickNoteBookDetail} className={`truncate ${NotoBookNaviBarOption}`}> */}
+                          <a
+                            href="#!"
+                            onClick={() => onClickNoteBookDetail(item.idx)}
+                            /* onClick={() => console.log(idx)} */ className={`truncate ${NotoBookNaviBarOption}`}
+                          >
                             {item.title}
                           </a>
-                          <button onClick={onClickMemoDelete}>
+                          <button onClick={() => onClickOpenNoteDelModal(item.idx)}>
                             <Image src="/img/delete.png" alt="delete-img" width={24} height={24} />
                           </button>
                         </li>
@@ -350,6 +407,7 @@ export default function Page() {
                 {isTodoComponent ? <Todo /> : ""}
                 {isUnsyncedComponent ? <Unsynced /> : ""}
                 {isAllNotesComponent ? <AllNotes /> : ""}
+                {isNoteBookDetailComponent ? <NoteDetail selectedIdx={selectedIdx} memoList={memoList} /> : ""}
               </aside>
               {/* 에디터 */}
               <Editor />
@@ -358,7 +416,7 @@ export default function Page() {
         </main>
       </div>
       {isNoteAddModalOpen && <NoteAddModal onClickCloseNoteAddModal={onClickCloseNoteAddModal} />}
-      {isNoteDeleteModalOpen && <NoteDeleteModal onClickCloseNoteDelModal={onClickCloseNoteDelModal} />}
+      {isNoteDeleteModalOpen && <NoteDeleteModal closeDelModal={onClickCloseNoteDelModal} memoTitleDelete={onClickMemoDelete} />}
     </>
   );
 }

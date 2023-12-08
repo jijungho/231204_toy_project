@@ -13,12 +13,25 @@ export default function NoteBook({ isMenuOpen }: NoteBookProps) {
   const [memoList, setMemoList] = useState<Memo[]>([]);
 
   useEffect(() => {
-    const titleList = JSON.parse(localStorage.getItem("noteTitle") || "[]");
-    setMemoList(titleList);
-  });
+    const fetchAndSetMemoList = () => {
+      const titleList = JSON.parse(localStorage.getItem("noteList") || "[]");
+      setMemoList(titleList);
+    };
+
+    const intervalId = setInterval(() => {
+      fetchAndSetMemoList();
+    }, 10);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   return (
-    <div className={`flex flex-col w-full ${isMenuOpen ? "" : "translatex-[-250px]"} transition-transform duration-500 ease-in-out z-3 bg-white`}>
+    <div
+      id="notebookcompont"
+      className={`flex flex-col w-[1670px] border-r-2 border-gray-200 ${
+        isMenuOpen ? "" : "translatex-[-250px]"
+      } transition-transform duration-500 ease-in-out z-3 bg-white`}
+    >
       <div className="flex justify-between items-center bg-gray-100 h-[40px] border-gray-200 border-b-[2px]">
         <div className="left-menu h-[40px] flex items-center">
           <h2 className="ml-8 w-[130px] truncate">Notebooks</h2>
@@ -41,16 +54,22 @@ export default function NoteBook({ isMenuOpen }: NoteBookProps) {
             />
           </div>
           <div className="flex justify-center items-center">
-            <Image src="/img/plus-black.png" alt="plus-black-img" width={24} height={24} />
+            <button>
+              <Image src="/img/plus-black.png" alt="plus-black-img" width={24} height={24} />
+            </button>
           </div>
         </div>
       </div>
-      <div className="w-full h-full p-4">
-        {memoList.map((item, idx) => (
-          <h2 key={idx} className="ml-4">
-            {item.title}
-          </h2>
-        ))}
+      <div className="w-full h-full">
+        <ul className="">
+          {memoList.map((item, idx) => (
+            <li key={idx} className="pl-4 border-b-2 h-[50px] hover:bg-gray-200 ">
+              <a href="#!" className="w-full h-full flex items-center truncate ">
+                {item.title}
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
