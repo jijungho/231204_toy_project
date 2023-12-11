@@ -36,12 +36,69 @@ function onError(error: any) {
   console.error(error);
 }
 
-export default function Editor() {
+interface Note {
+  idx: number;
+  title: string;
+  content: string;
+  subtitle: string;
+}
+
+interface NoteEditorProps {
+  selectedIdx: number;
+  memoList: Note[];
+}
+
+export default function Editor({ selectedIdx, memoList }: NoteEditorProps) {
+  const [subTitle, setSubTitle] = useState("");
   const [memoContent, setMemoContent] = useState("");
+  const [noteList, setNoteList] = useState<Note[]>([]);
+  const selectedNote = useMemo(() => memoList.find((item: Note) => item.idx === selectedIdx), [memoList, selectedIdx]);
+
+  let CONTENT;
+
+  useEffect(() => {
+    const getNoteList = localStorage.getItem("noteList");
+    if (getNoteList) {
+      setNoteList(JSON.parse(getNoteList));
+    }
+    console.log("useEffect");
+  }, [selectedIdx]);
+
+  // 에디터의 초기 콘텐츠 설정
+  CONTENT = JSON.stringify({
+    root: {
+      children: [
+        {
+          children: [
+            {
+              detail: 0,
+              format: 0,
+              mode: "normal",
+              style: "",
+              text: selectedNote?.content ? selectedNote?.content : "",
+              type: "text",
+              version: 1,
+            },
+          ],
+          direction: "ltr",
+          format: "",
+          indent: 0,
+          type: "paragraph",
+          version: 1,
+        },
+      ],
+      direction: "ltr",
+      format: "",
+      indent: 0,
+      type: "root",
+      version: 1,
+    },
+  });
 
   const initialConfig = {
     namespace: "MyEditor",
     theme,
+    editorState: CONTENT,
     onError,
     MyCustomAutoFocusPlugin,
   };
@@ -49,15 +106,30 @@ export default function Editor() {
   const handleContentChange = (editorState: any) => {
     editorState.read(() => {
       const root = $getRoot();
-      const selection = $getSelection();
-      // console.log(root.__cachedText);
-      // noteList에 content로 입력한 텍스트를 저장
-      root.__cachedText === null ? null : setMemoContent(root.__cachedText);
+      if (root.__cachedText !== null) {
+        const lines = root.__cachedText.split("\n");
+        setSubTitle(lines[0]);
+        setMemoContent(lines.slice(1).join("\n"));
+      }
     });
-    // noteList에 입력값을 저장하는 코드
-    localStorage.getItem("noteList");
 
-    localStorage.setItem("memoContent", JSON.stringify(memoContent));
+    if (selectedNote) {
+      const updatedNoteContent = memoList.map((note) => (note.idx === selectedIdx ? { ...note, content: memoContent } : note));
+
+      // noteList를 상태에 반영
+      setNoteList(updatedNoteContent);
+
+      const updateNoteSubTitle = memoList.map((note) => (note.idx === selectedIdx ? { ...note, subtitle: subTitle } : note));
+
+      setSubTitle(updateNoteSubTitle.find((note) => note.idx === selectedIdx)?.subtitle || "");
+
+      localStorage.setItem("noteList", JSON.stringify(updateNoteSubTitle));
+
+      // noteList를 localStorage에 저장
+      localStorage.setItem("noteList", JSON.stringify(updatedNoteContent));
+
+      console.log(memoList);
+    }
   };
 
   return (
@@ -94,7 +166,7 @@ export default function Editor() {
       <div className="w-full h-full  relative">
         <LexicalComposer initialConfig={initialConfig}>
           <PlainTextPlugin
-            contentEditable={<ContentEditable className="h-full p-4 border-r-2 border-b-2 border-l-2 " onChange={handleContentChange} />}
+            contentEditable={<ContentEditable className="h-full p-4 border-r-2 border-b-2 border-l-2 " />}
             placeholder={
               <div className="absolute top-[18px] left-[18px] text-gray-400">
                 Type / for menu or <span className="font-bold underline">select from Templates</span>

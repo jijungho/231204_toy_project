@@ -15,6 +15,8 @@ import NoteDetail from "../components/notebooks/NoteDetail";
 interface Memo {
   title: string;
   idx: number;
+  content: string;
+  subtitle: string;
 }
 
 export default function Page() {
@@ -40,6 +42,8 @@ export default function Page() {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
 
   const [memoList, setMemoList] = useState<Memo[]>([]);
+
+  const [subTitle, setSubTitle] = useState<string>("");
 
   // Menu 토글 이벤트
   const AllNotesToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -87,7 +91,7 @@ export default function Page() {
   //   console.log(idx);
   // };
 
-  const [selectedIdx, setSelectedIdx] = useState(null);
+  const [selectedIdx, setSelectedIdx] = useState(0);
 
   // 사이드 메뉴 클릭 시 상태 업데이트
   const onClickAllNotesMenu = () => {
@@ -402,15 +406,25 @@ export default function Page() {
             <NoteBook isMenuOpen={isMenuOpen} />
           ) : (
             <div className={`w-full flex ${isMenuOpen ? "" : "translate-x-[-250px]"} transition-transform duration-500 ease-in-out z-3 bg-white`}>
-              <aside id="subMain" className="w-[250px]">
+              <aside id="subMain" className="min-w-[250px] max-w-[250px] border-r-2 border-bg-gray-200">
                 {isUncategoriedComponent ? <Uncategorized /> : ""}
                 {isTodoComponent ? <Todo /> : ""}
                 {isUnsyncedComponent ? <Unsynced /> : ""}
                 {isAllNotesComponent ? <AllNotes /> : ""}
-                {isNoteBookDetailComponent ? <NoteDetail selectedIdx={selectedIdx} memoList={memoList} /> : ""}
+                {isNoteBookDetailComponent ? <NoteDetail selectedIdx={selectedIdx} memoList={memoList} subTitle={subTitle} /> : ""}
               </aside>
               {/* 에디터 */}
-              <Editor />
+
+              {memoList.map((item, idx) =>
+                isNoteBookDetailComponent && selectedIdx === item.idx ? <Editor key={idx} selectedIdx={selectedIdx} memoList={memoList} /> : ""
+              )}
+
+              {isAllNotesComponent ? <Editor selectedIdx={selectedIdx} memoList={memoList} /> : ""}
+              {isUncategoriedComponent ? <Editor selectedIdx={selectedIdx} memoList={memoList} /> : ""}
+              {isTodoComponent ? <Editor selectedIdx={selectedIdx} memoList={memoList} /> : ""}
+              {isUnsyncedComponent ? <Editor selectedIdx={selectedIdx} memoList={memoList} /> : ""}
+
+              {/* {selectedIdx === memoList.idx && <Editor />} */}
             </div>
           )}
         </main>
