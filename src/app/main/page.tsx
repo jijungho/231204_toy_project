@@ -42,8 +42,8 @@ export default function Page() {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
 
   const [memoList, setMemoList] = useState<Memo[]>([]);
-
   const [subTitle, setSubTitle] = useState<string>("");
+  const [selectedIdx, setSelectedIdx] = useState(0);
 
   // Menu 토글 이벤트
   const AllNotesToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -90,8 +90,6 @@ export default function Page() {
   //   onClickCloseNoteDelModal();
   //   console.log(idx);
   // };
-
-  const [selectedIdx, setSelectedIdx] = useState(0);
 
   // 사이드 메뉴 클릭 시 상태 업데이트
   const onClickAllNotesMenu = () => {
@@ -204,10 +202,37 @@ export default function Page() {
   const clickimageSrc = isAllNotesVisible ? "/img/arrotw-right-bold.png" : "/img/arrotw-right-bold.png";
   const hoverImageSrc = isAllNotesVisible ? "/img/arrotw-right-bold-balck.png" : "/img/arrotw-right-bold-balck.png";
 
+  const [dark, setDark] = useState("dark"); // 다크모드 있는곳 텍스트 !
+
+  const toggleDarkMode = () => {
+    if (localStorage.getItem("theme") === "dark") {
+      // 다크모드 -> 기본모드
+      localStorage.removeItem("theme"); // 다크모드 삭제
+      document.documentElement.classList.remove("dark"); // html class에서 dark클래스 삭제 !
+      setDark("nomal");
+    } else {
+      // 기본모드 -> 다크모드
+      document.documentElement.classList.add("dark"); // html의 class에 dark 클래스 추가 !
+      localStorage.setItem("theme", "dark"); // localstorage에 dark를 추가해서 ! useEffect에서 처음에 검사해서 다크모드인지 판단해주려고 !
+      setDark("dark");
+    }
+  };
+
+  useEffect(() => {
+    // 처음에 다크모드인지 판단해서 뿌려주기 !! ( 나중에는 상태관리를 해도 괜찮습니다 ! )
+    if (localStorage.getItem("theme") === "dark") {
+      document.documentElement.classList.add("dark");
+    }
+  }, []);
+
   return (
     <>
-      <div className={`min-w-[1400px] max-w-[1920px] h-[100vh] ${isNoteAddModalOpen ? "blur-sm" : ""} || ${isNoteDeleteModalOpen ? "blur-sm" : ""}`}>
-        <header className="">
+      <div
+        className={`min-w-[1400px] max-w-[1920px] h-[100vh] dark:bg-gray-600 ${isNoteAddModalOpen ? "blur-sm" : ""} || ${
+          isNoteDeleteModalOpen ? "blur-sm" : ""
+        }`}
+      >
+        <header className="dark: text-white">
           <div id="top-header" className="w-full h-full flex border-b-[2px] justify-between ">
             <ul className="flex items-center ">
               <li className="pl-[16px] h-[32px]">
@@ -236,7 +261,17 @@ export default function Page() {
             </ul>
             <ul className="flex items-center">
               <li>
-                <button className="p-[10px] m-2 bg-blue-500 rounded-[5px] hover:bg-blue-600">
+                <button onClick={toggleDarkMode}>
+                  <Image
+                    src={dark === "dark" ? "/img/moon.png" : "/img/sun.png"}
+                    alt={dark === "dark" ? "darkMode-img" : "nomalMode-img"}
+                    width={32}
+                    height={32}
+                  />
+                </button>
+              </li>
+              <li>
+                <button className="p-[10px] m-2 bg-blue-500 rounded-[5px] hover:bg-blue-600" onClick={onClickOpenNoteAddModal}>
                   <span className="text-white">New Note</span>
                 </button>
               </li>
@@ -342,7 +377,6 @@ export default function Page() {
                       {/* 내가 입력한 메모가 저장되야함 */}
                       {memoList.map((item, idx) => (
                         <li style={NoteBooksMenu} key={idx} className="py-2 pl-6 pr-4 h-[40px] hover:bg-gray-100 justify-between">
-                          {/* <a href="#!" onClick={onClickNoteBookDetail} className={`truncate ${NotoBookNaviBarOption}`}> */}
                           <a
                             href="#!"
                             onClick={() => onClickNoteBookDetail(item.idx)}
@@ -403,15 +437,15 @@ export default function Page() {
             </div>
           </aside>
           {isNoteBookComponent ? (
-            <NoteBook isMenuOpen={isMenuOpen} />
+            <NoteBook isMenuOpen={isMenuOpen} onClickNoteBookDetail={onClickNoteBookDetail} memoList={memoList} />
           ) : (
             <div className={`w-full flex ${isMenuOpen ? "" : "translate-x-[-250px]"} transition-transform duration-500 ease-in-out z-3 bg-white`}>
               <aside id="subMain" className="min-w-[250px] max-w-[250px] border-r-2 border-bg-gray-200">
                 {isUncategoriedComponent ? <Uncategorized /> : ""}
                 {isTodoComponent ? <Todo /> : ""}
                 {isUnsyncedComponent ? <Unsynced /> : ""}
-                {isAllNotesComponent ? <AllNotes /> : ""}
-                {isNoteBookDetailComponent ? <NoteDetail selectedIdx={selectedIdx} memoList={memoList} subTitle={subTitle} /> : ""}
+                {isAllNotesComponent ? <AllNotes selectedIdx={selectedIdx} memoList={memoList} onClickNoteBookDetail={onClickNoteBookDetail} /> : ""}
+                {isNoteBookDetailComponent ? <NoteDetail selectedIdx={selectedIdx} memoList={memoList} onClickNoteBookDetail={onClickNoteBookDetail} /> : ""}
               </aside>
               {/* 에디터 */}
 
@@ -423,8 +457,6 @@ export default function Page() {
               {isUncategoriedComponent ? <Editor selectedIdx={selectedIdx} memoList={memoList} /> : ""}
               {isTodoComponent ? <Editor selectedIdx={selectedIdx} memoList={memoList} /> : ""}
               {isUnsyncedComponent ? <Editor selectedIdx={selectedIdx} memoList={memoList} /> : ""}
-
-              {/* {selectedIdx === memoList.idx && <Editor />} */}
             </div>
           )}
         </main>

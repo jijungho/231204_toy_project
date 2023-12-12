@@ -12,6 +12,8 @@ function NoteAddModal({ onClickCloseNoteAddModal }: any) {
     const newMemo = {
       idx: savedMemos.length + 1,
       title: noteTitle,
+      content: "",
+      subtitle: "",
       // 추가로 메모에 필요한 속성들을 여기에 추가할 수 있습니다.
     };
 
@@ -22,6 +24,8 @@ function NoteAddModal({ onClickCloseNoteAddModal }: any) {
     localStorage.setItem("noteList", JSON.stringify(updatedMemos));
 
     onClickCloseNoteAddModal();
+
+    console.log("savedMemos", newMemo);
   };
 
   // iuput에 입력값이 없으면 create 버튼을 disabled로 변경
@@ -37,7 +41,7 @@ function NoteAddModal({ onClickCloseNoteAddModal }: any) {
       <div className="absolute top-0 w-full h-full bg-gray-500 opacity-30"></div>
       <div className="absolute top-0 w-full h-full flex justify-center items-center">
         <div className="w-[360px] flex flex-col bg-white rounded-[5px] p-4">
-          <h2 className="text-center py-4">New NoteBook</h2>
+          <h2 className="text-center py-4">Create New NoteBook</h2>
           <input
             type="text"
             placeholder="제목을 입력하세요"

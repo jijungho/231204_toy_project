@@ -1,5 +1,3 @@
-// pages/editor.js
-
 import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
@@ -49,22 +47,14 @@ interface NoteEditorProps {
 }
 
 export default function Editor({ selectedIdx, memoList }: NoteEditorProps) {
-  const [subTitle, setSubTitle] = useState("");
+  const [memoSubTitle, setMemoSubTitle] = useState("");
   const [memoContent, setMemoContent] = useState("");
-  const [noteList, setNoteList] = useState<Note[]>([]);
+
   const selectedNote = useMemo(() => memoList.find((item: Note) => item.idx === selectedIdx), [memoList, selectedIdx]);
 
   let CONTENT;
 
-  useEffect(() => {
-    const getNoteList = localStorage.getItem("noteList");
-    if (getNoteList) {
-      setNoteList(JSON.parse(getNoteList));
-    }
-    console.log("useEffect");
-  }, [selectedIdx]);
-
-  // 에디터의 초기 콘텐츠 설정
+  // 애디터 초기 상태를 설정
   CONTENT = JSON.stringify({
     root: {
       children: [
@@ -75,7 +65,10 @@ export default function Editor({ selectedIdx, memoList }: NoteEditorProps) {
               format: 0,
               mode: "normal",
               style: "",
-              text: selectedNote?.content ? selectedNote?.content : "",
+              text:
+                selectedNote?.subtitle && selectedNote?.content
+                  ? `${selectedNote?.subtitle}\n${selectedNote?.content}`
+                  : selectedNote?.subtitle || selectedNote?.content || "",
               type: "text",
               version: 1,
             },
@@ -103,59 +96,65 @@ export default function Editor({ selectedIdx, memoList }: NoteEditorProps) {
     MyCustomAutoFocusPlugin,
   };
 
-  const handleContentChange = (editorState: any) => {
-    editorState.read(() => {
+  // 에디터 입력 이벤트
+  const handleContentChange = (EditorState: any) => {
+    EditorState.read(() => {
       const root = $getRoot();
-      if (root.__cachedText !== null) {
+      if (root.__cachedText === null) return;
+      if (root.__cachedText !== "") {
         const lines = root.__cachedText.split("\n");
-        setSubTitle(lines[0]);
+        setMemoSubTitle(lines[0]);
         setMemoContent(lines.slice(1).join("\n"));
+
+        if (selectedNote) {
+          const loadSto = JSON.parse(localStorage.getItem("noteList") || "");
+
+          const updatedNoteIndex = loadSto.findIndex((note: Note) => note.idx === selectedIdx);
+
+          if (updatedNoteIndex !== -1) {
+            loadSto[updatedNoteIndex] = {
+              ...loadSto[updatedNoteIndex],
+              subtitle: memoSubTitle,
+              content: memoContent,
+            };
+          }
+
+          // 수정된 noteList로 로컬 스토리지 업데이트
+          if (loadSto[0].subTitle !== "" || loadSto[0].content !== "") {
+            localStorage.setItem("noteList", JSON.stringify(loadSto));
+          }
+
+          console.log("loadstr", loadSto[0]);
+          console.log("updatedNoteIndex", updatedNoteIndex);
+        }
       }
     });
-
-    if (selectedNote) {
-      const updatedNoteContent = memoList.map((note) => (note.idx === selectedIdx ? { ...note, content: memoContent } : note));
-
-      // noteList를 상태에 반영
-      setNoteList(updatedNoteContent);
-
-      const updateNoteSubTitle = memoList.map((note) => (note.idx === selectedIdx ? { ...note, subtitle: subTitle } : note));
-
-      setSubTitle(updateNoteSubTitle.find((note) => note.idx === selectedIdx)?.subtitle || "");
-
-      localStorage.setItem("noteList", JSON.stringify(updateNoteSubTitle));
-
-      // noteList를 localStorage에 저장
-      localStorage.setItem("noteList", JSON.stringify(updatedNoteContent));
-
-      console.log(memoList);
-    }
   };
 
   return (
     <div className="w-full">
       <div className="img-box flex justify-between p-2 bg-gray-100">
         <div className="flex justify-around w-[500px] ">
-          <button className="wid-[24px] h-[24px]">
+          <button className="w-[24px] h-[24px]">
             <Image src="/img/check-list.png" alt="check-list-img" width={24} height={24} className="" />
           </button>
-          <button className="wid-[24px] h-[24px]">
+          <button className="w-[24px] h-[24px]">
             <Image src="/img/image.png" alt="image-img" width={24} height={24} className="" />
           </button>
-          <button className="wid-[24px] h-[24px]">
+          <button className="w-[24px] h-[24px]">
             <Image src="/img/plus-circle.png" alt="plus-circle-img" width={24} height={24} className="" />
           </button>
           <Image src="/img/vbar.png" alt="vertical-bar-img" width={24} height={24} className="rotate-90 " />
-          <button className="wid-[24px] h-[24px]">
+          <button className="w-[24px] h-[24px]">
             <Image src="/img/pin.png" alt="pin-img" width={24} height={24} className="" />
           </button>
-          <button className="wid-[24px] h-[24px]">
+          <button className="w-[24px] h-[24px]">
             <Image src="/img/star.png" alt="star-img" width={24} height={24} className="" />
           </button>
-          <button className="wid-[24px] h-[24px]">
+          <button className="w-[24px] h-[24px]">
             <Image src="/img/share.png" alt="share-img" width={24} height={24} className="" />
           </button>
-          <button className="wid-[24px] h-[24px]">
+          <button className="w-[24px] h-[24px]">
             <Image src="/img/option.png" alt="option-img" width={24} height={24} className="" />
           </button>
         </div>
@@ -166,7 +165,7 @@ export default function Editor({ selectedIdx, memoList }: NoteEditorProps) {
       <div className="w-full h-full  relative">
         <LexicalComposer initialConfig={initialConfig}>
           <PlainTextPlugin
-            contentEditable={<ContentEditable className="h-full p-4 border-r-2 border-b-2 border-l-2 " />}
+            contentEditable={<ContentEditable className="h-full p-4 border-r-2 border-b-2 dark:bg-gray-600 " />}
             placeholder={
               <div className="absolute top-[18px] left-[18px] text-gray-400">
                 Type / for menu or <span className="font-bold underline">select from Templates</span>

@@ -15,5 +15,6 @@ export const subMainLi = `
   h-[120px]
   border-gray-200
   border-b-[1.5px]
-  mx-2
+  b-2
+  px-4
 `;

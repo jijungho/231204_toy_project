@@ -1,30 +1,20 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
-interface Memo {
+interface Note {
+  idx: number;
   title: string;
+  content: string;
+  subtitle: string;
 }
 
 interface NoteBookProps {
   isMenuOpen: boolean;
+  onClickNoteBookDetail: any;
+  memoList: Note[];
 }
 
-export default function NoteBook({ isMenuOpen }: NoteBookProps) {
-  const [memoList, setMemoList] = useState<Memo[]>([]);
-
-  useEffect(() => {
-    const fetchAndSetMemoList = () => {
-      const titleList = JSON.parse(localStorage.getItem("noteList") || "[]");
-      setMemoList(titleList);
-    };
-
-    const intervalId = setInterval(() => {
-      fetchAndSetMemoList();
-    }, 10);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
+export default function NoteBook({ isMenuOpen, onClickNoteBookDetail, memoList }: NoteBookProps) {
   return (
     <div
       id="notebookcompont"
@@ -63,10 +53,10 @@ export default function NoteBook({ isMenuOpen }: NoteBookProps) {
       <div className="w-full h-full">
         <ul className="">
           {memoList.map((item, idx) => (
-            <li key={idx} className="pl-4 border-b-2 h-[50px] hover:bg-gray-200 ">
-              <a href="#!" className="w-full h-full flex items-center truncate ">
+            <li key={idx} className="pl-4 border-b-2 h-[50px] hover:bg-gray-200">
+              <button className="w-full h-full flex items-center truncate" onClick={() => onClickNoteBookDetail(item.idx)}>
                 {item.title}
-              </a>
+              </button>
             </li>
           ))}
         </ul>
