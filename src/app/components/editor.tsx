@@ -44,9 +44,10 @@ interface Note {
 interface NoteEditorProps {
   selectedIdx: number;
   memoList: Note[];
+  screenMode: string;
 }
 
-export default function Editor({ selectedIdx, memoList }: NoteEditorProps) {
+export default function Editor({ selectedIdx, memoList, screenMode }: NoteEditorProps) {
   const [memoSubTitle, setMemoSubTitle] = useState("");
   const [memoContent, setMemoContent] = useState("");
 
@@ -132,40 +133,90 @@ export default function Editor({ selectedIdx, memoList }: NoteEditorProps) {
   };
 
   return (
-    <div className="w-full">
-      <div className="img-box flex justify-between p-2 bg-gray-100">
+    <div className="w-full ">
+      <div className="img-box flex justify-between p-2 bg-gray-100 dark:bg-gray-800 dark:border-b-[1px]">
         <div className="flex justify-around w-[500px] ">
           <button className="w-[24px] h-[24px]">
-            <Image src="/img/check-list.png" alt="check-list-img" width={24} height={24} className="" />
+            <Image
+              src={screenMode === "dark" ? "/img/darkmode/check-list-white.png" : "/img/check-list.png"}
+              alt={screenMode === "dark" ? "check-list-white-img" : "check-list-img"}
+              width={24}
+              height={24}
+              className=""
+            />
           </button>
           <button className="w-[24px] h-[24px]">
-            <Image src="/img/image.png" alt="image-img" width={24} height={24} className="" />
+            <Image
+              src={screenMode === "dark" ? "/img/darkmode/image-white.png" : "/img/image.png"}
+              alt={screenMode === "dark" ? "image-white-img" : "image-img"}
+              width={24}
+              height={24}
+              className=""
+            />
           </button>
           <button className="w-[24px] h-[24px]">
-            <Image src="/img/plus-circle.png" alt="plus-circle-img" width={24} height={24} className="" />
+            <Image
+              src={screenMode === "dark" ? "/img/darkmode/plus-circle-white.png" : "/img/plus-circle.png"}
+              alt={screenMode === "dark" ? "plus-circle-white-img" : "plus-circle-img"}
+              width={24}
+              height={24}
+              className=""
+            />
           </button>
           <Image src="/img/vbar.png" alt="vertical-bar-img" width={24} height={24} className="rotate-90 " />
           <button className="w-[24px] h-[24px]">
-            <Image src="/img/pin.png" alt="pin-img" width={24} height={24} className="" />
+            <Image
+              src={screenMode === "dark" ? "/img/darkmode/pin-white.png" : "/img/pin.png"}
+              alt={screenMode === "dark" ? "pin-white-img" : "pin-img"}
+              width={24}
+              height={24}
+              className=""
+            />
           </button>
           <button className="w-[24px] h-[24px]">
-            <Image src="/img/star.png" alt="star-img" width={24} height={24} className="" />
+            <Image
+              src={screenMode === "dark" ? "/img/darkmode/star-white.png" : "/img/star.png"}
+              alt={screenMode === "dark" ? "star-white-img" : "star-img"}
+              width={24}
+              height={24}
+              className=""
+            />
           </button>
           <button className="w-[24px] h-[24px]">
-            <Image src="/img/share.png" alt="share-img" width={24} height={24} className="" />
+            <Image
+              src={screenMode === "dark" ? "/img/darkmode/share-white.png" : "/img/share.png"}
+              alt={screenMode === "dark" ? "share-white-img" : "share-img"}
+              width={24}
+              height={24}
+              className=""
+            />
           </button>
           <button className="w-[24px] h-[24px]">
-            <Image src="/img/option.png" alt="option-img" width={24} height={24} className="" />
+            <Image
+              src={screenMode === "dark" ? "/img/darkmode/option-white.png" : "/img/option.png"}
+              alt={screenMode === "dark" ? "option-white-img" : "option-img"}
+              width={24}
+              height={24}
+              className=""
+            />
           </button>
         </div>
         <button>
-          <Image src="/img/maximize.png" alt="view-maxize-img" width={24} height={24} className="mr-2" />
+          <Image
+            src={screenMode === "dark" ? "/img/darkmode/maximize-white.png" : "/img/maximize.png"}
+            alt={screenMode === "dark" ? "maximize-white-img" : "maximize-img"}
+            width={24}
+            height={24}
+            className="mr-2"
+          />
         </button>
       </div>
       <div className="w-full h-full  relative">
         <LexicalComposer initialConfig={initialConfig}>
           <PlainTextPlugin
-            contentEditable={<ContentEditable className="h-full p-4 border-r-2 border-b-2 dark:bg-gray-600 " />}
+            contentEditable={
+              <ContentEditable className="h-full p-4 border-r-2 border-b-2 focus:outline-none dark:bg-gray-800 dark:caret-white dark:text-white " />
+            }
             placeholder={
               <div className="absolute top-[18px] left-[18px] text-gray-400">
                 Type / for menu or <span className="font-bold underline">select from Templates</span>

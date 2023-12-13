@@ -41,9 +41,17 @@ export default function Page() {
   // 메뉴 토글 상태 변수
   const [isMenuOpen, setIsMenuOpen] = useState(true);
 
+  // 메모 추가 모달 가시성 상태 변수
+  const [isNoteAddModalOpen, setIsNoteAddModalOpen] = useState(false);
+
+  // 메모 삭제 모달 가시성 상태 변수
+  const [isNoteDeleteModalOpen, setIsNoteDeleteModalOpen] = useState(false);
+
   const [memoList, setMemoList] = useState<Memo[]>([]);
-  const [subTitle, setSubTitle] = useState<string>("");
   const [selectedIdx, setSelectedIdx] = useState(0);
+
+  // 다크모드 설정 상태 변수
+  const [screenMode, SetScreenMode] = useState("nomal");
 
   // Menu 토글 이벤트
   const AllNotesToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -77,19 +85,6 @@ export default function Page() {
 
     return () => clearInterval(intervalId);
   }, []);
-
-  // 로컬에 저장된 데이터 삭제하는 클릭 이벤트
-  // const onClickMemoDelete = (idx: any) => {
-  //   const updatedMemoList = [...memoList];
-  //   updatedMemoList.splice(idx, 1);
-
-  //   localStorage.setItem("noteTitle", JSON.stringify(updatedMemoList));
-
-  //   setMemoList(updatedMemoList);
-
-  //   onClickCloseNoteDelModal();
-  //   console.log(idx);
-  // };
 
   // 사이드 메뉴 클릭 시 상태 업데이트
   const onClickAllNotesMenu = () => {
@@ -150,12 +145,6 @@ export default function Page() {
   // const handleAllNotesLinkClick = () => {
   // };
 
-  // 메모 추가 모달 가시성 상태 변수
-  const [isNoteAddModalOpen, setIsNoteAddModalOpen] = useState(false);
-
-  // 메모 삭제 모달 가시성 상태 변수
-  const [isNoteDeleteModalOpen, setIsNoteDeleteModalOpen] = useState(false);
-
   // 노트 추가 모달 열기
   const onClickOpenNoteAddModal = () => {
     setIsNoteAddModalOpen(true);
@@ -202,24 +191,21 @@ export default function Page() {
   const clickimageSrc = isAllNotesVisible ? "/img/arrotw-right-bold.png" : "/img/arrotw-right-bold.png";
   const hoverImageSrc = isAllNotesVisible ? "/img/arrotw-right-bold-balck.png" : "/img/arrotw-right-bold-balck.png";
 
-  const [dark, setDark] = useState("dark"); // 다크모드 있는곳 텍스트 !
-
   const toggleDarkMode = () => {
     if (localStorage.getItem("theme") === "dark") {
       // 다크모드 -> 기본모드
-      localStorage.removeItem("theme"); // 다크모드 삭제
-      document.documentElement.classList.remove("dark"); // html class에서 dark클래스 삭제 !
-      setDark("nomal");
+      localStorage.removeItem("theme");
+      document.documentElement.classList.remove("dark");
+      SetScreenMode("nomal");
     } else {
       // 기본모드 -> 다크모드
-      document.documentElement.classList.add("dark"); // html의 class에 dark 클래스 추가 !
-      localStorage.setItem("theme", "dark"); // localstorage에 dark를 추가해서 ! useEffect에서 처음에 검사해서 다크모드인지 판단해주려고 !
-      setDark("dark");
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+      SetScreenMode("dark");
     }
   };
 
   useEffect(() => {
-    // 처음에 다크모드인지 판단해서 뿌려주기 !! ( 나중에는 상태관리를 해도 괜찮습니다 ! )
     if (localStorage.getItem("theme") === "dark") {
       document.documentElement.classList.add("dark");
     }
@@ -227,27 +213,38 @@ export default function Page() {
 
   return (
     <>
-      <div
-        className={`min-w-[1400px] max-w-[1920px] h-[100vh] dark:bg-gray-600 ${isNoteAddModalOpen ? "blur-sm" : ""} || ${
-          isNoteDeleteModalOpen ? "blur-sm" : ""
-        }`}
-      >
-        <header className="dark: text-white">
+      <div className={`min-w-[1400px] max-w-[1920px] h-[100vh]  ${isNoteAddModalOpen ? "blur-sm" : ""} || ${isNoteDeleteModalOpen ? "blur-sm" : ""}`}>
+        <header className="dark:bg-gray-800">
           <div id="top-header" className="w-full h-full flex border-b-[2px] justify-between ">
             <ul className="flex items-center ">
               <li className="pl-[16px] h-[32px]">
                 <button onClick={NavMenuToggle}>
-                  <Image src="/img/menu.png" alt="hambar-menu-img" width={32} height={32} />
+                  <Image
+                    src={screenMode === "dark" ? "/img/darkmode/menu-white.png" : "/img/menu.png"}
+                    alt={screenMode === "dark" ? "menu-white-img" : "menu-img"}
+                    width={32}
+                    height={32}
+                  />
                 </button>
               </li>
               <li className="h-[32px]">
                 <button>
-                  <Image src="/img/arrow-left.png" alt="arrow-left-img" width={32} height={32} />
+                  <Image
+                    src={screenMode === "dark" ? "/img/darkmode/arrow-left-white.png" : "/img/arrow-left.png"}
+                    alt={screenMode === "dark" ? "arrow-left-white-img" : "arrow-left-img"}
+                    width={32}
+                    height={32}
+                  />
                 </button>
               </li>
               <li className="h-[32px]">
                 <button>
-                  <Image src="/img/arrow-right.png" alt="arrow-right-img" width={32} height={32} />
+                  <Image
+                    src={screenMode === "dark" ? "/img/darkmode/arrow-right-white.png" : "/img/arrow-right.png"}
+                    alt={screenMode === "dark" ? "arrow-right-white-img" : "arrow-right-img"}
+                    width={32}
+                    height={32}
+                  />
                 </button>
               </li>
               <li className="flex relative h-[32px]">
@@ -261,10 +258,10 @@ export default function Page() {
             </ul>
             <ul className="flex items-center">
               <li>
-                <button onClick={toggleDarkMode}>
+                <button onClick={toggleDarkMode} className="flex items-center mr-4">
                   <Image
-                    src={dark === "dark" ? "/img/moon.png" : "/img/sun.png"}
-                    alt={dark === "dark" ? "darkMode-img" : "nomalMode-img"}
+                    src={screenMode === "dark" ? "/img/darkmode/sun-white.png" : "/img/moon.png"}
+                    alt={screenMode === "dark" ? "darkMode-img" : "nomalMode-img"}
                     width={32}
                     height={32}
                   />
@@ -277,26 +274,36 @@ export default function Page() {
               </li>
               <li className="ml-[32px] h-[32px]">
                 <button>
-                  <Image src="/img/copy.png" alt="copy-img" width={32} height={32} />
+                  <Image
+                    src={screenMode === "dark" ? "/img/darkmode/copy-white.png" : "/img/copy.png"}
+                    alt={screenMode === "dark" ? "copy-white-img" : "copy-img"}
+                    width={32}
+                    height={32}
+                  />
                 </button>
               </li>
               <li className="pr-[16px] ml-[32px] h-[32px]">
                 <button>
-                  <Image src="/img/settings.png" alt="settings-img" width={32} height={32} />
+                  <Image
+                    src={screenMode === "dark" ? "/img/darkmode/settings-white.png" : "/img/settings.png"}
+                    alt={screenMode === "dark" ? "settings-white-img" : "settings-img"}
+                    width={32}
+                    height={32}
+                  />
                 </button>
               </li>
             </ul>
           </div>
         </header>
         <main id="noteBook" className="flex min-w-[1400px] max-w-[1920px] h-[100vh]">
-          <aside id="sideNavBar" className={"w-[250px] transition-transform duration-700 ease-in-out  border-gray-200 border-r-2"}>
+          <aside id="sideNavBar" className="w-[250px] transition-transform duration-700 ease-in-out  border-gray-200 border-r-2 dark:bg-gray-800">
             <div className="flex h-full">
               <nav className="flex">
                 <ul className="w-[250px]">
                   <li className="w-full">
-                    <ul className="flex justify-center flex-col">
+                    <ul className="flex justify-center flex-col dark:text-white">
                       <li onClick={onClickAllNotesMenu} className="flex items-center h-[40px] hover:bg-gray-100">
-                        <a href="#!" className="flex items-center ">
+                        <a href="#!" className="flex items-center dark:text-red-500">
                           <button onClick={AllNotesToggle}>
                             <Image
                               src={isAllNotesHover ? hoverImageSrc : clickimageSrc}
@@ -312,23 +319,29 @@ export default function Page() {
                               }}
                             />
                           </button>
-                          <Image src="/img/sticky-note.png" alt="all-note-img" className="mr-[8px]" width={24} height={24} />
+                          <Image
+                            src={screenMode === "dark" ? "/img/darkmode/sticky-note-white.png" : "/img/sticky-note.png"}
+                            alt={screenMode === "dark" ? "sticky-note-white-img" : "sticky-note-img"}
+                            className="mr-[8px]"
+                            width={24}
+                            height={24}
+                          />
                           All Notes
                         </a>
                       </li>
-                      <li style={AllNotesMenu} className="  py-2 px-6 h-[40px] items-center hover:bg-gray-100">
-                        <a href="#!" onClick={onClickUncategoriedMenu} className={commonNaviBarOption}>
+                      <li style={AllNotesMenu} className="  py-2 px-6 h-[40px] items-center hover:bg-gray-100 dark:hover:text-black">
+                        <a href="#!" onClick={onClickUncategoriedMenu} className={` ${commonNaviBarOption}`}>
                           <Image src="/img/filte.png" alt="uncategorized-img" className="mr-[8px] h-[100%]" width={24} height={24} />
                           Uncategorized
                         </a>
                       </li>
-                      <li style={AllNotesMenu} className="  py-2 px-6 h-[40px] items-center hover:bg-gray-100">
+                      <li style={AllNotesMenu} className="  py-2 px-6 h-[40px] items-center hover:bg-gray-100 dark:hover:text-black">
                         <a href="#!" onClick={onClickTodoMenu} className={commonNaviBarOption}>
                           <Image src="/img/check.png" alt="todo-img" className="mr-[8px]" width={24} height={24} />
                           Todo
                         </a>
                       </li>
-                      <li style={AllNotesMenu} className="  py-2 px-6 h-[40px] items-center hover:bg-gray-100">
+                      <li style={AllNotesMenu} className="  py-2 px-6 h-[40px] items-center hover:bg-gray-100 dark:hover:text-black">
                         <a href="#!" onClick={onClickUnsyncedMenu} className={commonNaviBarOption}>
                           <Image src="/img/cloud-off.png" alt="unsynced-img" className="mr-[8px]" width={24} height={24} />
                           Unsynced
@@ -337,9 +350,9 @@ export default function Page() {
                     </ul>
                   </li>
                   <li id="asd" className="">
-                    <ul className="flex justify-center flex-col relative">
+                    <ul className="flex justify-center flex-col relative dark:text-white">
                       <li className="flex items-center h-[40px]">
-                        <a href="#!" className="flex items-center  ">
+                        <a href="#!" className="flex items-center">
                           <button onClick={NoteBooksToggle} className="w-[24px] h-[24px]">
                             <Image
                               src={isNoteBooksHover ? hoverImageSrc : clickimageSrc}
@@ -356,13 +369,18 @@ export default function Page() {
                             />
                           </button>
                         </a>
-                        <a href="#!" onClick={onClickNoteBookMenu} className="flex w-full items-center h-full text-blue-800">
+                        <a href="#!" onClick={onClickNoteBookMenu} className="flex w-full items-center h-full text-blue-800 dark:text-red-500">
                           NOTEBOOKS
                         </a>
                         {/* 메모 추가 버튼 */}
                         <button onClick={onClickOpenNoteAddModal} className="group flex items-center relative">
-                          <Image src="/img/plus-blue.png" alt="plus-blue-img" width={24} height={24} />
-                          <span className="w-[110px] bg-gray-600 absolute top-[-26px] right-[-45px] rounded opacity-0 transition-opacity group-hover:opacity-100 text-[14px] z-5 text-white">
+                          <Image
+                            src={screenMode === "dark" ? "/img/darkmode/plus.png" : "/img/plus-blue.png"}
+                            alt={screenMode === "dark" ? "plus-white-img" : "plus-blue-img"}
+                            width={24}
+                            height={24}
+                          />
+                          <span className="w-[110px] bg-gray-600 absolute top-[-26px] right-[-45px] rounded opacity-0 transition-opacity group-hover:opacity-100 text-[14px] z-5 text-white ">
                             New NoteBook
                           </span>
                           <Image
@@ -376,7 +394,7 @@ export default function Page() {
                       </li>
                       {/* 내가 입력한 메모가 저장되야함 */}
                       {memoList.map((item, idx) => (
-                        <li style={NoteBooksMenu} key={idx} className="py-2 pl-6 pr-4 h-[40px] hover:bg-gray-100 justify-between">
+                        <li style={NoteBooksMenu} key={idx} className="py-2 pl-6 pr-4 h-[40px] hover:bg-gray-100 justify-between dark:hover:text-black">
                           <a
                             href="#!"
                             onClick={() => onClickNoteBookDetail(item.idx)}
@@ -392,7 +410,7 @@ export default function Page() {
                     </ul>
                   </li>
                   <li className="">
-                    <ul className="flex justify-center flex-col">
+                    <ul className="flex justify-center flex-col dark:text-white">
                       <li className="flex items-center  h-[40px]">
                         <a href="#!" className="flex items-center ">
                           <button onClick={TagsToggle}>
@@ -411,11 +429,11 @@ export default function Page() {
                             />
                           </button>
                         </a>
-                        <a href="#!" className="flex w-full items-center h-full text-blue-800">
+                        <a href="#!" className="flex w-full items-center h-full text-blue-800 dark:text-red-500">
                           TAGS
                         </a>
                       </li>
-                      <li style={TagsMenu} className="py-2 pl-6 h-[40px] items-center hover:bg-gray-100">
+                      <li style={TagsMenu} className="py-2 pl-6 h-[40px] items-center hover:bg-gray-100 dark:hover:text-black">
                         <a href="#!" className={NotoBookNaviBarOption}>
                           #UpNote
                         </a>
@@ -423,12 +441,12 @@ export default function Page() {
                     </ul>
                   </li>
                   <li className=" ml-6 h-[40px] flex items-center">
-                    <a href="#!" className="block text-blue-800">
+                    <a href="#!" className="block text-blue-800 dark:text-red-500">
                       TEMPLATES
                     </a>
                   </li>
                   <li className=" ml-6 h-[40px] flex items-center">
-                    <a href="#!" className="block text-blue-800">
+                    <a href="#!" className="block text-blue-800 dark:text-red-500">
                       TRASH
                     </a>
                   </li>
@@ -450,13 +468,17 @@ export default function Page() {
               {/* 에디터 */}
 
               {memoList.map((item, idx) =>
-                isNoteBookDetailComponent && selectedIdx === item.idx ? <Editor key={idx} selectedIdx={selectedIdx} memoList={memoList} /> : ""
+                isNoteBookDetailComponent && selectedIdx === item.idx ? (
+                  <Editor key={idx} selectedIdx={selectedIdx} memoList={memoList} screenMode={screenMode} />
+                ) : (
+                  ""
+                )
               )}
 
-              {isAllNotesComponent ? <Editor selectedIdx={selectedIdx} memoList={memoList} /> : ""}
-              {isUncategoriedComponent ? <Editor selectedIdx={selectedIdx} memoList={memoList} /> : ""}
-              {isTodoComponent ? <Editor selectedIdx={selectedIdx} memoList={memoList} /> : ""}
-              {isUnsyncedComponent ? <Editor selectedIdx={selectedIdx} memoList={memoList} /> : ""}
+              {isAllNotesComponent ? <Editor selectedIdx={selectedIdx} memoList={memoList} screenMode={screenMode} /> : ""}
+              {isUncategoriedComponent ? <Editor selectedIdx={selectedIdx} memoList={memoList} screenMode={screenMode} /> : ""}
+              {isTodoComponent ? <Editor selectedIdx={selectedIdx} memoList={memoList} screenMode={screenMode} /> : ""}
+              {isUnsyncedComponent ? <Editor selectedIdx={selectedIdx} memoList={memoList} screenMode={screenMode} /> : ""}
             </div>
           )}
         </main>

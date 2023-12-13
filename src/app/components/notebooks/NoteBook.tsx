@@ -18,12 +18,12 @@ export default function NoteBook({ isMenuOpen, onClickNoteBookDetail, memoList }
   return (
     <div
       id="notebookcompont"
-      className={`flex flex-col w-[1670px] border-r-2 border-gray-200 ${
+      className={`flex flex-col w-[1670px] border-r-2 border-gray-200  ${
         isMenuOpen ? "" : "translatex-[-250px]"
-      } transition-transform duration-500 ease-in-out z-3 bg-white`}
+      } transition-transform duration-500 ease-in-out z-3`}
     >
-      <div className="flex justify-between items-center bg-gray-100 h-[40px] border-gray-200 border-b-[2px]">
-        <div className="left-menu h-[40px] flex items-center">
+      <div className="flex justify-between items-center bg-gray-100 h-[40px] border-gray-200 border-b-[2px] dark:bg-gray-800 ">
+        <div className="left-menu h-[40px] flex items-center dark:text-white">
           <h2 className="ml-8 w-[130px] truncate">Notebooks</h2>
         </div>
         <div className="w-[500px] right-menu flex justify-around">
@@ -50,11 +50,11 @@ export default function NoteBook({ isMenuOpen, onClickNoteBookDetail, memoList }
           </div>
         </div>
       </div>
-      <div className="w-full h-full">
-        <ul className="">
+      <div className="w-full h-full dark:bg-gray-800">
+        <ul className="dark:text-white">
           {memoList.map((item, idx) => (
-            <li key={idx} className="pl-4 border-b-2 h-[50px] hover:bg-gray-200">
-              <button className="w-full h-full flex items-center truncate" onClick={() => onClickNoteBookDetail(item.idx)}>
+            <li key={idx} className="pl-4 border-b-2 h-[50px] hover:bg-gray-200 dark:border-b-[1px]">
+              <button className="w-full h-full flex items-center truncate " onClick={() => onClickNoteBookDetail(item.idx)}>
                 {item.title}
               </button>
             </li>

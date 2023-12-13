@@ -20,14 +20,14 @@ export default function NoteDetail({ selectedIdx, memoList, onClickNoteBookDetai
 
   return (
     <>
-      <div className="flex justify-between items-center bg-gray-100 h-[40px]">
-        {selectedNote ? <h2 className="ml-4 truncate">{selectedNote.title}</h2> : <h2 className="ml-4 truncate">Select a Note</h2>}
+      <div className="flex justify-between items-center bg-gray-100 h-[40px] dark:bg-gray-800 dark:border-b-[1px]">
+        {selectedNote ? <h2 className="ml-4 truncate dark:text-white">{selectedNote.title}</h2> : <h2 className="ml-4 truncate">Select a Note</h2>}
         <Image src="/img/option.png" alt="option-img" className="mr-4 " width={24} height={24} />
       </div>
-      <ul className="overflow-y-auto">
+      <ul className="overflow-y-auto dark:bg-gray-800 h-[100%]">
         {memoList.map((item, idx) => (
-          <li key={idx} className={`hover:bg-blue-100  ${subMainLi}`}>
-            <button className="w-full h-full" onClick={() => onClickNoteBookDetail(item.idx)}>
+          <li key={idx} className={`hover:bg-blue-100 dark:hover:bg-gray-100 dark:text-white  ${subMainLi}`}>
+            <button className="w-full h-full dark:hover:text-black" onClick={() => onClickNoteBookDetail(item.idx)}>
               <h2 className="font-bold text-left text-[20px] truncate pb-6">{item.subtitle ? item.subtitle : "New Note"}</h2>
               <p className="truncate">{item.content ? item.content : "No additional text"}</p>
             </button>
