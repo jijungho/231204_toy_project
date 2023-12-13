@@ -306,7 +306,7 @@ export default function Page() {
                         <a href="#!" className="flex items-center dark:text-red-500">
                           <button onClick={AllNotesToggle}>
                             <Image
-                              src={isAllNotesHover ? hoverImageSrc : clickimageSrc}
+                              src={isAllNotesHover ? "/img/arrotw-right-bold-balck.png" : "/img/arrotw-right-bold.png"}
                               className={`${isAllNotesVisible ? "rotate-90" : ""}`}
                               alt="arrow-right-img"
                               width={24}
@@ -355,7 +355,7 @@ export default function Page() {
                         <a href="#!" className="flex items-center">
                           <button onClick={NoteBooksToggle} className="w-[24px] h-[24px]">
                             <Image
-                              src={isNoteBooksHover ? hoverImageSrc : clickimageSrc}
+                              src={isNoteBooksHover ? "/img/arrotw-right-bold-balck.png" : "/img/arrotw-right-bold.png"}
                               className={`${isNoteBooks ? "rotate-90" : ""}`}
                               alt="arrow-right-img"
                               width={24}
@@ -375,7 +375,7 @@ export default function Page() {
                         {/* 메모 추가 버튼 */}
                         <button onClick={onClickOpenNoteAddModal} className="group flex items-center relative">
                           <Image
-                            src={screenMode === "dark" ? "/img/darkmode/plus.png" : "/img/plus-blue.png"}
+                            src={screenMode === "dark" ? "/img/darkmode/plus-white.png" : "/img/plus-blue.png"}
                             alt={screenMode === "dark" ? "plus-white-img" : "plus-blue-img"}
                             width={24}
                             height={24}
@@ -415,7 +415,7 @@ export default function Page() {
                         <a href="#!" className="flex items-center ">
                           <button onClick={TagsToggle}>
                             <Image
-                              src={isTagsHover ? hoverImageSrc : clickimageSrc}
+                              src={isTagsHover ? "/img/arrotw-right-bold-balck.png" : "/img/arrotw-right-bold.png"}
                               className={`${isTags ? "rotate-90" : ""}`}
                               alt="arrow-right-img"
                               width={24}
@@ -462,7 +462,7 @@ export default function Page() {
                 {isUncategoriedComponent ? <Uncategorized /> : ""}
                 {isTodoComponent ? <Todo /> : ""}
                 {isUnsyncedComponent ? <Unsynced /> : ""}
-                {isAllNotesComponent ? <AllNotes selectedIdx={selectedIdx} memoList={memoList} onClickNoteBookDetail={onClickNoteBookDetail} /> : ""}
+                {isAllNotesComponent ? <AllNotes selectedIdx={selectedIdx} memoList={memoList} onClickNoteBookDetail={onClickNoteBookDetail} screenMode={screenMode} /> : ""}
                 {isNoteBookDetailComponent ? <NoteDetail selectedIdx={selectedIdx} memoList={memoList} onClickNoteBookDetail={onClickNoteBookDetail} /> : ""}
               </aside>
               {/* 에디터 */}

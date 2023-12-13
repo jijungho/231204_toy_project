@@ -13,9 +13,10 @@ interface AllNote {
   selectedIdx: number;
   onClickNoteBookDetail: any;
   memoList: Note[];
+  screenMode: string
 }
 
-export default function AllNotes({ memoList, selectedIdx, onClickNoteBookDetail }: AllNote) {
+export default function AllNotes({ memoList, selectedIdx, onClickNoteBookDetail, screenMode }: AllNote) {
   const selectedNote = memoList.find((item: Note) => item.idx === selectedIdx);
 
   return (
@@ -25,7 +26,7 @@ export default function AllNotes({ memoList, selectedIdx, onClickNoteBookDetail 
       "
       >
         <h2 className="ml-4 dark:text-white">All Notes</h2>
-        <Image src="/img/option.png" alt="option-img" className="mr-4 " width={24} height={24} />
+        <Image src={screenMode === "dark" ? "/img/darkmode/option-white.png" : "/img/option.png"} alt="option-img" className="mr-4 " width={24} height={24} />
       </div>
       <ul className="overflow-y-auto h-[100%] dark:bg-gray-800">
         {memoList.map((item, idx) => (
