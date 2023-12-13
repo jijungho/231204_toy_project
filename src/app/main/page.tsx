@@ -465,7 +465,6 @@ export default function Page() {
                 {isAllNotesComponent ? <AllNotes selectedIdx={selectedIdx} memoList={memoList} onClickNoteBookDetail={onClickNoteBookDetail} screenMode={screenMode} /> : ""}
                 {isNoteBookDetailComponent ? <NoteDetail selectedIdx={selectedIdx} memoList={memoList} onClickNoteBookDetail={onClickNoteBookDetail} /> : ""}
               </aside>
-              {/* 에디터 */}
 
               {memoList.map((item, idx) =>
                 isNoteBookDetailComponent && selectedIdx === item.idx ? (
