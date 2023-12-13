@@ -7,32 +7,36 @@ interface Note {
   title: string;
   content: string;
   subtitle: string;
+  subMemoList: Array<{
+    memosubtitle: string;
+    memocontent: string;
+  }>;
 }
 
 interface AllNote {
   selectedIdx: number;
   onClickNoteBookDetail: any;
   memoList: Note[];
+  screenMode: string;
 }
 
-export default function AllNotes({ memoList, selectedIdx, onClickNoteBookDetail }: AllNote) {
-  const selectedNote = memoList.find((item: Note) => item.idx === selectedIdx);
-
+export default function AllNotes({ memoList, onClickNoteBookDetail, screenMode }: AllNote) {
   return (
     <>
-      <div
-        className="flex justify-between items-center bg-gray-100 h-[40px] dark:bg-gray-800 dark:border-b-[1px]
-      "
-      >
+      <div className="flex justify-between items-center bg-gray-100 h-[40px] dark:bg-gray-800 dark:border-b-[1px]">
         <h2 className="ml-4 dark:text-white">All Notes</h2>
-        <Image src="/img/option.png" alt="option-img" className="mr-4 " width={24} height={24} />
+        <Image src={screenMode === "dark" ? "/img/darkmode/option-white.png" : "/img/option.png"} alt="option-img" className="mr-4 " width={24} height={24} />
       </div>
       <ul className="overflow-y-auto h-[100%] dark:bg-gray-800">
-        {memoList.map((item, idx) => (
-          <li key={idx} className={`hover:bg-blue-100 dark:hover:bg-gray-100 dark:text-white  ${subMainLi}`}>
-            <button className="w-full h-full dark:hover:text-black" onClick={() => onClickNoteBookDetail(item.idx)}>
-              <h2 className="font-bold text-left text-[20px] truncate pb-6">{item.subtitle ? item.subtitle : "New Note"}</h2>
-              <p className="truncate text-left ">{item.content ? item.content : "No additional text"}</p>
+        {memoList.map((note, idx) => (
+          <li key={idx} className={`hover:bg-blue-100 dark:hover:bg-gray-100 dark:text-white ${subMainLi}`}>
+            <button className="w-full h-full dark:hover:text-black" onClick={() => onClickNoteBookDetail(note.idx)}>
+              <div>
+                <h2 className="font-bold text-left text-[20px] truncate pb-6">
+                  {note.subMemoList?.[0].memosubtitle ? note.subMemoList[0].memosubtitle : "New Note"}
+                </h2>
+                <p className="truncate text-left">{note.subMemoList?.[0].memocontent ? note.subMemoList[0].memocontent : "No additional text"}</p>
+              </div>
             </button>
           </li>
         ))}

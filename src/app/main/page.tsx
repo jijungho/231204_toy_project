@@ -10,16 +10,22 @@ import Editor from "@/app/components/editor";
 import NoteAddModal from "@/app/components/NoteAddModal";
 import NoteBook from "@/app/components/notebooks/NoteBook";
 import NoteDeleteModal from "../components/NoteDeleteModal";
-import NoteDetail from "../components/notebooks/NoteDetail";
+import NoteBookMemo from "../components/notebooks/NoteBookMemo";
+import ConfirmModal from "../components/ConfirmModal";
 
 interface Memo {
   title: string;
   idx: number;
   content: string;
   subtitle: string;
+  subMemoList: Array<{
+    memosubtitle: string;
+    memocontent: string;
+    memoidx: number;
+  }>;
 }
 
-export default function Page() {
+export default function Page({ memoSubTitle, memoContent }: any) {
   // 사이드 메뉴 클릭 상태 변수
   const [isAllNotesVisible, setAllNotesVisible] = useState(true);
   const [isNoteBooks, setIsNoteBooks] = useState(true);
@@ -46,6 +52,9 @@ export default function Page() {
 
   // 메모 삭제 모달 가시성 상태 변수
   const [isNoteDeleteModalOpen, setIsNoteDeleteModalOpen] = useState(false);
+
+  // 컨펌 모달 가시성 상태 변수
+  const [isConfirmModal, setIsConfirmModal] = useState(false);
 
   const [memoList, setMemoList] = useState<Memo[]>([]);
   const [selectedIdx, setSelectedIdx] = useState(0);
@@ -136,7 +145,7 @@ export default function Page() {
     setIsAllNotesComponent(false);
 
     setSelectedIdx(idx);
-    console.log(idx);
+    // console.log(idx);
   };
   // const handleAllNotesLinkClick = () => {
   // };
@@ -185,6 +194,53 @@ export default function Page() {
     setIsNoteDeleteModalOpen(false);
   };
 
+  const addNewMemo = () => {
+    // 로컬 스토리지에서 이전 메모 리스트를 불러옴
+    const storedMemoList = JSON.parse(localStorage.getItem("noteList") || "[]");
+
+    // 노트북이 있는지 여부를 확인
+    const hasNotebook = storedMemoList.length > 0;
+
+    if (!hasNotebook) {
+      // 노트북이 없는 경우, confirmModal을 띄움
+      setIsConfirmModal(true);
+    } else {
+      // 노트북이 있는 경우에는 새로운 메모 추가 로직을 실행
+      // 새로운 메모 객체 생성
+      const newMemo = {
+        idx: storedMemoList.length,
+        subMemoList: [
+          {
+            memosubtitle: memoSubTitle,
+            memocontent: memoContent,
+          },
+        ], // 새로운 메모의 subMemoList 초기화
+      };
+      console.log(storedMemoList);
+
+      // 선택된 노트북의 인덱스를 찾아서 해당 노트북의 subMemoList에 새로운 메모를 추가
+      const updatedMemoList = storedMemoList.map((memo: any) => {
+        if (memo.idx === selectedIdx) {
+          const subMemoList = Array.isArray(memo.subMemoList) ? memo.subMemoList : [];
+          return { ...memo, subMemoList: [...subMemoList, newMemo] };
+        }
+        return memo;
+      });
+
+      // 로컬 스토리지와 상태를 업데이트
+      localStorage.setItem("noteList", JSON.stringify(updatedMemoList));
+      setMemoList(updatedMemoList);
+
+      // 아래 코드는 예시이므로 실제 로직에 맞게 수정 필요
+      console.log("새로운 메모가 추가되었습니다.");
+    }
+  };
+
+  // confirmModal에서 취소를 눌렀을 때 실행되는 함수
+  const handleCancel = () => {
+    setIsConfirmModal(false);
+  };
+
   const AllNotesMenu = { display: isAllNotesVisible ? "flex" : "none" };
   const NoteBooksMenu = { display: isNoteBooks ? "flex" : "none" };
   const TagsMenu = { display: isTags ? "flex" : "none" };
@@ -213,7 +269,11 @@ export default function Page() {
 
   return (
     <>
-      <div className={`min-w-[1400px] max-w-[1920px] h-[100vh]  ${isNoteAddModalOpen ? "blur-sm" : ""} || ${isNoteDeleteModalOpen ? "blur-sm" : ""}`}>
+      <div
+        className={`min-w-[1400px] max-w-[1920px] h-[100vh]  ${isNoteAddModalOpen ? "blur-sm" : ""} || ${isNoteDeleteModalOpen ? "blur-sm" : ""} || ${
+          isConfirmModal ? "blur-sm" : ""
+        }`}
+      >
         <header className="dark:bg-gray-800">
           <div id="top-header" className="w-full h-full flex border-b-[2px] justify-between ">
             <ul className="flex items-center ">
@@ -268,7 +328,7 @@ export default function Page() {
                 </button>
               </li>
               <li>
-                <button className="p-[10px] m-2 bg-blue-500 rounded-[5px] hover:bg-blue-600" onClick={onClickOpenNoteAddModal}>
+                <button className="p-[10px] m-2 bg-blue-500 rounded-[5px] hover:bg-blue-600" onClick={addNewMemo}>
                   <span className="text-white">New Note</span>
                 </button>
               </li>
@@ -375,7 +435,7 @@ export default function Page() {
                         {/* 메모 추가 버튼 */}
                         <button onClick={onClickOpenNoteAddModal} className="group flex items-center relative">
                           <Image
-                            src={screenMode === "dark" ? "/img/darkmode/plus.png" : "/img/plus-blue.png"}
+                            src={screenMode === "dark" ? "/img/darkmode/plus-white.png" : "/img/plus-blue.png"}
                             alt={screenMode === "dark" ? "plus-white-img" : "plus-blue-img"}
                             width={24}
                             height={24}
@@ -462,8 +522,12 @@ export default function Page() {
                 {isUncategoriedComponent ? <Uncategorized /> : ""}
                 {isTodoComponent ? <Todo /> : ""}
                 {isUnsyncedComponent ? <Unsynced /> : ""}
-                {isAllNotesComponent ? <AllNotes selectedIdx={selectedIdx} memoList={memoList} onClickNoteBookDetail={onClickNoteBookDetail} /> : ""}
-                {isNoteBookDetailComponent ? <NoteDetail selectedIdx={selectedIdx} memoList={memoList} onClickNoteBookDetail={onClickNoteBookDetail} /> : ""}
+                {isAllNotesComponent ? (
+                  <AllNotes selectedIdx={selectedIdx} memoList={memoList} onClickNoteBookDetail={onClickNoteBookDetail} screenMode={screenMode} />
+                ) : (
+                  ""
+                )}
+                {isNoteBookDetailComponent ? <NoteBookMemo selectedIdx={selectedIdx} memoList={memoList} onClickNoteBookDetail={onClickNoteBookDetail} /> : ""}
               </aside>
               {/* 에디터 */}
 
@@ -485,6 +549,7 @@ export default function Page() {
       </div>
       {isNoteAddModalOpen && <NoteAddModal onClickCloseNoteAddModal={onClickCloseNoteAddModal} />}
       {isNoteDeleteModalOpen && <NoteDeleteModal closeDelModal={onClickCloseNoteDelModal} memoTitleDelete={onClickMemoDelete} />}
+      {isConfirmModal && <ConfirmModal onClickOpenNoteAddModal={onClickOpenNoteAddModal} handleCancel={handleCancel} />}
     </>
   );
 }

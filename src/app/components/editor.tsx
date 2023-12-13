@@ -35,10 +35,15 @@ function onError(error: any) {
 }
 
 interface Note {
-  idx: number;
   title: string;
+  idx: number;
   content: string;
   subtitle: string;
+  subMemoList: Array<{
+    memosubtitle: string;
+    memocontent: string;
+    memoidx: number;
+  }>;
 }
 
 interface NoteEditorProps {
@@ -53,10 +58,8 @@ export default function Editor({ selectedIdx, memoList, screenMode }: NoteEditor
 
   const selectedNote = useMemo(() => memoList.find((item: Note) => item.idx === selectedIdx), [memoList, selectedIdx]);
 
-  let CONTENT;
-
   // 애디터 초기 상태를 설정
-  CONTENT = JSON.stringify({
+  const CONTENT = JSON.stringify({
     root: {
       children: [
         {
@@ -67,9 +70,9 @@ export default function Editor({ selectedIdx, memoList, screenMode }: NoteEditor
               mode: "normal",
               style: "",
               text:
-                selectedNote?.subtitle && selectedNote?.content
-                  ? `${selectedNote?.subtitle}\n${selectedNote?.content}`
-                  : selectedNote?.subtitle || selectedNote?.content || "",
+                selectedNote?.subMemoList?.[0].memosubtitle && selectedNote?.subMemoList?.[0].memocontent
+                  ? `${selectedNote?.subMemoList?.[0].memosubtitle}\n${selectedNote?.subMemoList?.[0].memocontent}`
+                  : selectedNote?.subMemoList?.[0].memosubtitle || selectedNote?.subMemoList?.[0].memocontent || "",
               type: "text",
               version: 1,
             },
@@ -115,18 +118,19 @@ export default function Editor({ selectedIdx, memoList, screenMode }: NoteEditor
           if (updatedNoteIndex !== -1) {
             loadSto[updatedNoteIndex] = {
               ...loadSto[updatedNoteIndex],
-              subtitle: memoSubTitle,
-              content: memoContent,
+              subMemoList: [
+                {
+                  memosubtitle: memoSubTitle,
+                  memocontent: memoContent,
+                },
+              ],
             };
           }
 
           // 수정된 noteList로 로컬 스토리지 업데이트
-          if (loadSto[0].subTitle !== "" || loadSto[0].content !== "") {
+          if (loadSto[0].memosubtitle !== "" || loadSto[0].memocontent !== "") {
             localStorage.setItem("noteList", JSON.stringify(loadSto));
           }
-
-          console.log("loadstr", loadSto[0]);
-          console.log("updatedNoteIndex", updatedNoteIndex);
         }
       }
     });
