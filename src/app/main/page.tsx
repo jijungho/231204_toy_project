@@ -12,7 +12,6 @@ import NoteBook from "@/app/components/notebooks/NoteBook";
 import NoteDeleteModal from "../components/NoteDeleteModal";
 import NoteBookMemo from "../components/notebooks/NoteBookMemo";
 import ConfirmModal from "../components/ConfirmModal";
-
 interface Note {
   title: string;
   idx: number;
@@ -266,9 +265,8 @@ export default function Page({ memoSubTitle, memoContent }: any) {
   return (
     <>
       <div
-        className={`min-w-[1400px] max-w-[1920px] h-[100vh]  ${isNoteAddModalOpen ? "blur-sm" : ""} || ${isNoteDeleteModalOpen ? "blur-sm" : ""} || ${
-          isConfirmModal ? "blur-sm" : ""
-        }`}
+        className={`min-w-[1400px] max-w-[1920px] h-[100vh]  ${isNoteAddModalOpen ? "blur-sm" : ""} || ${isNoteDeleteModalOpen ? "blur-sm" : ""} || ${isConfirmModal ? "blur-sm" : ""
+          }`}
       >
         <header className="dark:bg-gray-800">
           <div id="top-header" className="w-full h-full flex border-b-[2px] justify-between ">
@@ -515,9 +513,8 @@ export default function Page({ memoSubTitle, memoContent }: any) {
             <NoteBook isMenuOpen={isMenuOpen} onClickNoteBookDetail={onClickNoteBookDetail} memoList={memoList} />
           ) : (
             <div
-              className={`w-full flex ${
-                isMenuOpen ? "" : "translate-x-[-250px]"
-              } transition-transform duration-500 ease-in-out z-3 bg-white w-full flex  dark:bg-gray-800`}
+              className={`w-full flex ${isMenuOpen ? "" : "translate-x-[-250px]"
+                } transition-transform duration-500 ease-in-out z-3 bg-white w-full flex  dark:bg-gray-800`}
             >
               <aside id="subMain" className="min-w-[250px] max-w-[250px] border-r-2 border-bg-gray-200">
                 {isUncategoriedComponent ? <Uncategorized /> : ""}
