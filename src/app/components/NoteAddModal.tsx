@@ -1,31 +1,42 @@
 import React, { useState, useEffect } from "react";
 
+interface Note {
+  title: string;
+  idx: number;
+  content: string;
+  subtitle: string;
+  memoList: Array<{
+    memoSubTitle: string;
+    memoContent: string;
+    memoidx: number;
+  }>;
+}
+
 function NoteAddModal({ onClickCloseNoteAddModal }: any) {
   const [noteTitle, setNoteTitle] = useState(""); // 단일 메모의 제목을 저장
   const [isTitle, setIsTitle] = useState(false);
 
   const onClickNoteCreate = () => {
     // 로컬 스토리지에서 저장된 메모 목록을 불러옵니다.
-    const savedMemos = JSON.parse(localStorage.getItem("noteList") || "[]");
+    const savedMemos = JSON.parse(localStorage.getItem("noteBookList") || "[]");
 
     // 새로운 메모를 만듭니다.
     const newMemo = {
       idx: savedMemos.length + 1,
       title: noteTitle,
-      // content: "",
-      // subtitle: "",
       // 추가로 메모에 필요한 속성들을 여기에 추가할 수 있습니다.
+      memoList: [],
     };
 
     // 새로운 메모를 기존 메모 목록에 추가합니다.
     const updatedMemos = [newMemo, ...savedMemos];
 
     // 로컬 스토리지에 업데이트된 메모 목록을 저장합니다.
-    localStorage.setItem("noteList", JSON.stringify(updatedMemos));
+    localStorage.setItem("noteBookList", JSON.stringify(updatedMemos));
 
     onClickCloseNoteAddModal();
 
-    console.log("savedMemos", newMemo);
+    console.log("savedMemos", updatedMemos);
   };
 
   // iuput에 입력값이 없으면 create 버튼을 disabled로 변경

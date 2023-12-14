@@ -7,9 +7,9 @@ interface Note {
   title: string;
   content: string;
   subtitle: string;
-  subMemoList: Array<{
-    memosubtitle: string;
-    memocontent: string;
+  memoList: Array<{
+    memoSubTitle: string;
+    memoContent: string;
   }>;
 }
 
@@ -27,15 +27,15 @@ export default function AllNotes({ memoList, onClickNoteBookDetail, screenMode }
         <h2 className="ml-4 dark:text-white">All Notes</h2>
         <Image src={screenMode === "dark" ? "/img/darkmode/option-white.png" : "/img/option.png"} alt="option-img" className="mr-4 " width={24} height={24} />
       </div>
-      <ul className="overflow-y-auto h-[100%] dark:bg-gray-800">
+      <ul className="overflow-y-auto h-[100%] ">
         {memoList.map((note, idx) => (
           <li key={idx} className={`hover:bg-blue-100 dark:hover:bg-gray-100 dark:text-white ${subMainLi}`}>
             <button className="w-full h-full dark:hover:text-black" onClick={() => onClickNoteBookDetail(note.idx)}>
               <div>
                 <h2 className="font-bold text-left text-[20px] truncate pb-6">
-                  {note.subMemoList?.[0].memosubtitle ? note.subMemoList[0].memosubtitle : "New Note"}
+                  {note.memoList?.[0]?.memoSubTitle ? note.memoList[0]?.memoSubTitle : "New Note"}
                 </h2>
-                <p className="truncate text-left">{note.subMemoList?.[0].memocontent ? note.subMemoList[0].memocontent : "No additional text"}</p>
+                <p className="truncate text-left">{note.memoList?.[0]?.memoContent ? note.memoList[0]?.memoContent : "No additional text"}</p>
               </div>
             </button>
           </li>

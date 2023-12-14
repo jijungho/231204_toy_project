@@ -7,9 +7,9 @@ interface Note {
   title: string;
   content: string;
   subtitle: string;
-  subMemoList: Array<{
-    memosubtitle: string;
-    memocontent: string;
+  memoList: Array<{
+    memoSubTitle: string;
+    memoContent: string;
   }>;
 }
 
@@ -29,13 +29,13 @@ export default function NoteBookMemo({ selectedIdx, memoList, onClickNoteBookDet
         <Image src="/img/option.png" alt="option-img" className="mr-4 " width={24} height={24} />
       </div>
       <ul className="overflow-y-auto dark:bg-gray-800 h-[100%]">
-        {selectedNote && selectedNote.subMemoList ? (
-          selectedNote.subMemoList.map((subMemoList, subIdx) => (
+        {selectedNote && selectedNote.memoList && selectedNote.memoList.length > 0 ? (
+          selectedNote.memoList.map((subMemoList, subIdx) => (
             <li key={subIdx} className={`hover:bg-blue-100 dark:hover:bg-gray-100 dark:text-white ${subMainLi}`}>
               <button className="w-full h-full dark:hover:text-black" onClick={() => onClickNoteBookDetail(selectedIdx)}>
                 <div>
-                  <h2 className="font-bold text-left text-[20px] truncate pb-6">{subMemoList.memosubtitle ? subMemoList.memosubtitle : "New Note"}</h2>
-                  <p className="truncate text-left">{subMemoList.memocontent ? subMemoList.memocontent : "No additional text"}</p>
+                  <h2 className="font-bold text-left text-[20px] truncate pb-6">{subMemoList.memoSubTitle ? subMemoList.memoSubTitle : "New Note"}</h2>
+                  <p className="truncate text-left">{subMemoList.memoContent ? subMemoList.memoContent : "No additional text"}</p>
                 </div>
               </button>
             </li>

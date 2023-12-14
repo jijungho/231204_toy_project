@@ -39,9 +39,9 @@ interface Note {
   idx: number;
   content: string;
   subtitle: string;
-  subMemoList: Array<{
-    memosubtitle: string;
-    memocontent: string;
+  memoList: Array<{
+    memoSubTitle: string;
+    memoContent: string;
     memoidx: number;
   }>;
 }
@@ -53,8 +53,8 @@ interface NoteEditorProps {
 }
 
 export default function Editor({ selectedIdx, memoList, screenMode }: NoteEditorProps) {
-  const [memoSubTitle, setMemoSubTitle] = useState("");
-  const [memoContent, setMemoContent] = useState("");
+  const [memoSubTitle, setmemoSubTitle] = useState("");
+  const [memoContent, setmemoContent] = useState("");
 
   const selectedNote = useMemo(() => memoList.find((item: Note) => item.idx === selectedIdx), [memoList, selectedIdx]);
 
@@ -70,9 +70,9 @@ export default function Editor({ selectedIdx, memoList, screenMode }: NoteEditor
               mode: "normal",
               style: "",
               text:
-                selectedNote?.subMemoList?.[0].memosubtitle && selectedNote?.subMemoList?.[0].memocontent
-                  ? `${selectedNote?.subMemoList?.[0].memosubtitle}\n${selectedNote?.subMemoList?.[0].memocontent}`
-                  : selectedNote?.subMemoList?.[0].memosubtitle || selectedNote?.subMemoList?.[0].memocontent || "",
+                selectedNote?.memoList?.[0]?.memoSubTitle && selectedNote?.memoList?.[0]?.memoContent
+                  ? `${selectedNote?.memoList?.[0]?.memoSubTitle}\n${selectedNote?.memoList?.[0]?.memoContent}`
+                  : selectedNote?.memoList?.[0]?.memoSubTitle || selectedNote?.memoList?.[0]?.memoContent || "",
               type: "text",
               version: 1,
             },
@@ -92,6 +92,8 @@ export default function Editor({ selectedIdx, memoList, screenMode }: NoteEditor
     },
   });
 
+  // console.log(selectedNote?.memoList?.[0]?.memoSubTitle);
+
   const initialConfig = {
     namespace: "MyEditor",
     theme,
@@ -107,29 +109,44 @@ export default function Editor({ selectedIdx, memoList, screenMode }: NoteEditor
       if (root.__cachedText === null) return;
       if (root.__cachedText !== "") {
         const lines = root.__cachedText.split("\n");
-        setMemoSubTitle(lines[0]);
-        setMemoContent(lines.slice(1).join("\n"));
+
+        const newmemoSubTitle = lines[0];
+        const newmemoContent = lines.slice(1).join("\n");
+
+        setmemoSubTitle(newmemoSubTitle);
+        setmemoContent(newmemoContent);
 
         if (selectedNote) {
-          const loadSto = JSON.parse(localStorage.getItem("noteList") || "");
+          const loadSto = JSON.parse(localStorage.getItem("noteBookList") || "");
 
           const updatedNoteIndex = loadSto.findIndex((note: Note) => note.idx === selectedIdx);
+
+          //TODO: memoList의 memoIdx를 비교하여 같은 idx를 가진 배열에 저장 or 로컬스토리지에 memoList key 값으로 새로 생성해서 구현
+
+          // memoList의 memoidx를 비교하여 같은 idx를 가진 곳에 입력한 텍스트를 저장
+
+          // 1번 메모장안에 1번 메모, 2번 메모, 3번 메모 각 메모장마다 따로 로컬스토리지에 저장
+          // 메모를 추가할때마다 선택한 노트북의 idx에 맞으면 해당 메모장에 메모를 추가
 
           if (updatedNoteIndex !== -1) {
             loadSto[updatedNoteIndex] = {
               ...loadSto[updatedNoteIndex],
-              subMemoList: [
+              memoList: [
                 {
-                  memosubtitle: memoSubTitle,
-                  memocontent: memoContent,
+                  memoidx: 1,
+                  memoSubTitle: newmemoSubTitle,
+                  memoContent: newmemoContent,
                 },
               ],
             };
+            console.log("editor", memoList);
           }
 
+          console.log("loadSto[updatedNoteIndex]", loadSto[updatedNoteIndex]);
+
           // 수정된 noteList로 로컬 스토리지 업데이트
-          if (loadSto[0].memosubtitle !== "" || loadSto[0].memocontent !== "") {
-            localStorage.setItem("noteList", JSON.stringify(loadSto));
+          if (loadSto[0].memoSubTitle !== "" || loadSto[0].memoContent !== "") {
+            localStorage.setItem("noteBookList", JSON.stringify(loadSto));
           }
         }
       }
@@ -137,7 +154,7 @@ export default function Editor({ selectedIdx, memoList, screenMode }: NoteEditor
   };
 
   return (
-    <div className="w-full ">
+    <div className="w-full  ">
       <div className="img-box flex justify-between p-2 bg-gray-100 dark:bg-gray-800 dark:border-b-[1px]">
         <div className="flex justify-around w-[500px] ">
           <button className="w-[24px] h-[24px]">
@@ -215,7 +232,7 @@ export default function Editor({ selectedIdx, memoList, screenMode }: NoteEditor
           />
         </button>
       </div>
-      <div className="w-full h-full  relative">
+      <div className="w-full relative">
         <LexicalComposer initialConfig={initialConfig}>
           <PlainTextPlugin
             contentEditable={

@@ -2,10 +2,15 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
 interface Note {
-  idx: number;
   title: string;
+  idx: number;
   content: string;
   subtitle: string;
+  memoList: Array<{
+    memoSubTitle: string;
+    memoContent: string;
+    memoidx: number;
+  }>;
 }
 
 interface NoteBookProps {
@@ -50,7 +55,7 @@ export default function NoteBook({ isMenuOpen, onClickNoteBookDetail, memoList }
           </div>
         </div>
       </div>
-      <div className="w-full h-full dark:bg-gray-800">
+      <div className="w-full h-full">
         <ul className="dark:text-white">
           {memoList.map((item, idx) => (
             <li key={idx} className="pl-4 border-b-2 h-[50px] hover:bg-gray-200 dark:border-b-[1px]">

@@ -13,14 +13,14 @@ import NoteDeleteModal from "../components/NoteDeleteModal";
 import NoteBookMemo from "../components/notebooks/NoteBookMemo";
 import ConfirmModal from "../components/ConfirmModal";
 
-interface Memo {
+interface Note {
   title: string;
   idx: number;
   content: string;
   subtitle: string;
-  subMemoList: Array<{
-    memosubtitle: string;
-    memocontent: string;
+  memoList: Array<{
+    memoSubTitle: string;
+    memoContent: string;
     memoidx: number;
   }>;
 }
@@ -56,7 +56,7 @@ export default function Page({ memoSubTitle, memoContent }: any) {
   // 컨펌 모달 가시성 상태 변수
   const [isConfirmModal, setIsConfirmModal] = useState(false);
 
-  const [memoList, setMemoList] = useState<Memo[]>([]);
+  const [memoList, setMemoList] = useState<Note[]>([]);
   const [selectedIdx, setSelectedIdx] = useState(0);
 
   // 다크모드 설정 상태 변수
@@ -82,8 +82,8 @@ export default function Page({ memoSubTitle, memoContent }: any) {
   // 로컬에 저장된 데이터를 반영해주는 useEffect 훅
   useEffect(() => {
     const loadMemoList = () => {
-      const titleList = JSON.parse(localStorage.getItem("noteList") || "[]");
-      setMemoList(titleList);
+      const noteBookList = JSON.parse(localStorage.getItem("noteBookList") || "[]");
+      setMemoList(noteBookList);
     };
 
     loadMemoList();
@@ -180,7 +180,7 @@ export default function Page({ memoSubTitle, memoContent }: any) {
     const noteToDelete = JSON.parse(localStorage.getItem("DeleteNote") || "{}");
     const updatedMemoList = memoList.filter((memo) => memo.idx !== noteToDelete.idx);
 
-    localStorage.setItem("noteList", JSON.stringify(updatedMemoList));
+    localStorage.setItem("noteBookList", JSON.stringify(updatedMemoList));
     setMemoList(updatedMemoList);
 
     onClickCloseNoteDelModal();
@@ -194,9 +194,11 @@ export default function Page({ memoSubTitle, memoContent }: any) {
     setIsNoteDeleteModalOpen(false);
   };
 
+  let num = 2;
+
   const addNewMemo = () => {
     // 로컬 스토리지에서 이전 메모 리스트를 불러옴
-    const storedMemoList = JSON.parse(localStorage.getItem("noteList") || "[]");
+    const storedMemoList = JSON.parse(localStorage.getItem("noteBookList") || "[]");
 
     // 노트북이 있는지 여부를 확인
     const hasNotebook = storedMemoList.length > 0;
@@ -205,30 +207,24 @@ export default function Page({ memoSubTitle, memoContent }: any) {
       // 노트북이 없는 경우, confirmModal을 띄움
       setIsConfirmModal(true);
     } else {
-      // 노트북이 있는 경우에는 새로운 메모 추가 로직을 실행
-      // 새로운 메모 객체 생성
-      const newMemo = {
-        idx: storedMemoList.length,
-        subMemoList: [
-          {
-            memosubtitle: memoSubTitle,
-            memocontent: memoContent,
-          },
-        ], // 새로운 메모의 subMemoList 초기화
-      };
-      console.log(storedMemoList);
-
       // 선택된 노트북의 인덱스를 찾아서 해당 노트북의 subMemoList에 새로운 메모를 추가
       const updatedMemoList = storedMemoList.map((memo: any) => {
         if (memo.idx === selectedIdx) {
-          const subMemoList = Array.isArray(memo.subMemoList) ? memo.subMemoList : [];
-          return { ...memo, subMemoList: [...subMemoList, newMemo] };
+          const memoList = Array.isArray(memo.memoList) ? memo.memoList : [];
+
+          // console.log("memo.memoList", memo.memoList);
+          const newMemo = {
+            memoidx: memo.memoList.length + 1,
+            memosubtitle: memoSubTitle,
+            memocontent: memoContent,
+          };
+          return { ...memo, memoList: [...memoList, newMemo] };
         }
         return memo;
       });
 
       // 로컬 스토리지와 상태를 업데이트
-      localStorage.setItem("noteList", JSON.stringify(updatedMemoList));
+      localStorage.setItem("noteBookList", JSON.stringify(updatedMemoList));
       setMemoList(updatedMemoList);
 
       // 아래 코드는 예시이므로 실제 로직에 맞게 수정 필요
@@ -355,8 +351,8 @@ export default function Page({ memoSubTitle, memoContent }: any) {
             </ul>
           </div>
         </header>
-        <main id="noteBook" className="flex min-w-[1400px] max-w-[1920px] h-[100vh]">
-          <aside id="sideNavBar" className="w-[250px] transition-transform duration-700 ease-in-out  border-gray-200 border-r-2 dark:bg-gray-800">
+        <main id="noteBook" className="flex min-w-[1400px] max-w-[1920px] h-full dark:bg-gray-800">
+          <aside id="sideNavBar" className="w-[250px] h-full transition-transform duration-700 ease-in-out  border-gray-200 border-r-2 ">
             <div className="flex h-full">
               <nav className="flex">
                 <ul className="w-[250px]">
@@ -458,7 +454,8 @@ export default function Page({ memoSubTitle, memoContent }: any) {
                           <a
                             href="#!"
                             onClick={() => onClickNoteBookDetail(item.idx)}
-                            /* onClick={() => console.log(idx)} */ className={`truncate ${NotoBookNaviBarOption}`}
+                            // onClick={() => console.log(idx)}
+                            className={`truncate ${NotoBookNaviBarOption}`}
                           >
                             {item.title}
                           </a>
@@ -517,7 +514,11 @@ export default function Page({ memoSubTitle, memoContent }: any) {
           {isNoteBookComponent ? (
             <NoteBook isMenuOpen={isMenuOpen} onClickNoteBookDetail={onClickNoteBookDetail} memoList={memoList} />
           ) : (
-            <div className={`w-full flex ${isMenuOpen ? "" : "translate-x-[-250px]"} transition-transform duration-500 ease-in-out z-3 bg-white`}>
+            <div
+              className={`w-full flex ${
+                isMenuOpen ? "" : "translate-x-[-250px]"
+              } transition-transform duration-500 ease-in-out z-3 bg-white w-full flex  dark:bg-gray-800`}
+            >
               <aside id="subMain" className="min-w-[250px] max-w-[250px] border-r-2 border-bg-gray-200">
                 {isUncategoriedComponent ? <Uncategorized /> : ""}
                 {isTodoComponent ? <Todo /> : ""}
