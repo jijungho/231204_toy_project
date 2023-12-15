@@ -10,17 +10,18 @@ interface Note {
   memoList: Array<{
     memoSubTitle: string;
     memoContent: string;
+    memoidx: number;
   }>;
 }
 
 interface AllNote {
-  selectedIdx: number;
+  selecNoteBookIdx: number;
   onClickNoteBookDetail: any;
   memoList: Note[];
+  screenMode: string;
 }
 
-export default function AllNotes({ memoList, selectedIdx, onClickNoteBookDetail }: AllNote) {
-  const selectedNote = memoList.find((item: Note) => item.idx === selectedIdx);
+export default function AllNotes({ memoList, onClickNoteBookDetail, screenMode }: AllNote) {
 
   return (
     <>

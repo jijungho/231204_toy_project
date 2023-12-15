@@ -27,7 +27,7 @@ export default function NoteBook({ isMenuOpen, onClickNoteBookDetail, memoList }
         isMenuOpen ? "" : "translatex-[-250px]"
       } transition-transform duration-500 ease-in-out z-3`}
     >
-      <div className="flex justify-between items-center bg-gray-100 h-[40px] border-gray-200 border-b-[2px] dark:bg-gray-800 ">
+      <div className="flex justify-between items-center bg-gray-100 h-[40px] border-gray-200 border-y-2 dark:bg-gray-800 ">
         <div className="left-menu h-[40px] flex items-center dark:text-white">
           <h2 className="ml-8 w-[130px] truncate">Notebooks</h2>
         </div>
