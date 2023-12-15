@@ -360,7 +360,7 @@ export default function Page({ memoSubTitle, memoContent }: any) {
                         <a href="#!" className="flex items-center dark:text-red-500">
                           <button onClick={AllNotesToggle}>
                             <Image
-                              src={isAllNotesHover ? hoverImageSrc : clickimageSrc}
+                              src={isAllNotesHover ? "/img/arrotw-right-bold-balck.png" : "/img/arrotw-right-bold.png"}
                               className={`${isAllNotesVisible ? "rotate-90" : ""}`}
                               alt="arrow-right-img"
                               width={24}
@@ -409,7 +409,7 @@ export default function Page({ memoSubTitle, memoContent }: any) {
                         <a href="#!" className="flex items-center">
                           <button onClick={NoteBooksToggle} className="w-[24px] h-[24px]">
                             <Image
-                              src={isNoteBooksHover ? hoverImageSrc : clickimageSrc}
+                              src={isNoteBooksHover ? "/img/arrotw-right-bold-balck.png" : "/img/arrotw-right-bold.png"}
                               className={`${isNoteBooks ? "rotate-90" : ""}`}
                               alt="arrow-right-img"
                               width={24}
@@ -470,7 +470,7 @@ export default function Page({ memoSubTitle, memoContent }: any) {
                         <a href="#!" className="flex items-center ">
                           <button onClick={TagsToggle}>
                             <Image
-                              src={isTagsHover ? hoverImageSrc : clickimageSrc}
+                              src={isTagsHover ? "/img/arrotw-right-bold-balck.png" : "/img/arrotw-right-bold.png"}
                               className={`${isTags ? "rotate-90" : ""}`}
                               alt="arrow-right-img"
                               width={24}
@@ -520,14 +520,9 @@ export default function Page({ memoSubTitle, memoContent }: any) {
                 {isUncategoriedComponent ? <Uncategorized /> : ""}
                 {isTodoComponent ? <Todo /> : ""}
                 {isUnsyncedComponent ? <Unsynced /> : ""}
-                {isAllNotesComponent ? (
-                  <AllNotes selectedIdx={selectedIdx} memoList={memoList} onClickNoteBookDetail={onClickNoteBookDetail} screenMode={screenMode} />
-                ) : (
-                  ""
-                )}
+                {isAllNotesComponent ? <AllNotes selectedIdx={selectedIdx} memoList={memoList} onClickNoteBookDetail={onClickNoteBookDetail} /> : ""}
                 {isNoteBookDetailComponent ? <NoteBookMemo selectedIdx={selectedIdx} memoList={memoList} onClickNoteBookDetail={onClickNoteBookDetail} /> : ""}
               </aside>
-              {/* 에디터 */}
 
               {memoList.map((item, idx) =>
                 isNoteBookDetailComponent && selectedIdx === item.idx ? (

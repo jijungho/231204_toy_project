@@ -17,10 +17,11 @@ interface AllNote {
   selectedIdx: number;
   onClickNoteBookDetail: any;
   memoList: Note[];
-  screenMode: string;
 }
 
-export default function AllNotes({ memoList, onClickNoteBookDetail, screenMode }: AllNote) {
+export default function AllNotes({ memoList, selectedIdx, onClickNoteBookDetail }: AllNote) {
+  const selectedNote = memoList.find((item: Note) => item.idx === selectedIdx);
+
   return (
     <>
       <div className="flex justify-between items-center bg-gray-100 h-[40px] dark:bg-gray-800 dark:border-b-[1px]">
