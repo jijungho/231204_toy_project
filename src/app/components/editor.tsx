@@ -47,16 +47,16 @@ interface Note {
 }
 
 interface NoteEditorProps {
-  selectedIdx: number;
+  selecNoteBookIdx: number;
   memoList: Note[];
   screenMode: string;
 }
 
-export default function Editor({ selectedIdx, memoList, screenMode }: NoteEditorProps) {
+export default function Editor({ selecNoteBookIdx, memoList, screenMode }: NoteEditorProps) {
   const [memoSubTitle, setmemoSubTitle] = useState("");
   const [memoContent, setmemoContent] = useState("");
 
-  const selectedNote = useMemo(() => memoList.find((item: Note) => item.idx === selectedIdx), [memoList, selectedIdx]);
+  const selectedNote = useMemo(() => memoList.find((item: Note) => item.idx === selecNoteBookIdx), [memoList, selecNoteBookIdx]);
 
   // 애디터 초기 상태를 설정
   const CONTENT = JSON.stringify({
@@ -116,37 +116,40 @@ export default function Editor({ selectedIdx, memoList, screenMode }: NoteEditor
         setmemoSubTitle(newmemoSubTitle);
         setmemoContent(newmemoContent);
 
+        //TODO: 새로운 노트를 추가 할 수 있는데, 노트를 개별적으로 에디터를 불러오지 못함
+
         if (selectedNote) {
-          const loadSto = JSON.parse(localStorage.getItem("noteBookList") || "");
+          const noteBookList = JSON.parse(localStorage.getItem("noteBookList") || "");
 
-          const updatedNoteIndex = loadSto.findIndex((note: Note) => note.idx === selectedIdx);
-
-          //TODO: memoList의 memoIdx를 비교하여 같은 idx를 가진 배열에 저장 or 로컬스토리지에 memoList key 값으로 새로 생성해서 구현
-
-          // memoList의 memoidx를 비교하여 같은 idx를 가진 곳에 입력한 텍스트를 저장
-
-          // 1번 메모장안에 1번 메모, 2번 메모, 3번 메모 각 메모장마다 따로 로컬스토리지에 저장
-          // 메모를 추가할때마다 선택한 노트북의 idx에 맞으면 해당 메모장에 메모를 추가
+          const updatedNoteIndex = noteBookList.findIndex((note: Note) => note.idx === selecNoteBookIdx);
 
           if (updatedNoteIndex !== -1) {
-            loadSto[updatedNoteIndex] = {
-              ...loadSto[updatedNoteIndex],
-              memoList: [
-                {
-                  memoidx: 1,
-                  memoSubTitle: newmemoSubTitle,
-                  memoContent: newmemoContent,
-                },
-              ],
-            };
+            // memoIdx가 같은 메모가 이미 존재하는지 확인
+            const existingMemoIndex = noteBookList[updatedNoteIndex].memoList.findIndex((memo: any) => memo.memoidx === memo.memoidx);
+
+            if (existingMemoIndex !== -1) {
+              // 이미 존재하는 메모 업데이트
+              noteBookList[updatedNoteIndex].memoList[existingMemoIndex] = {
+                memoidx: memoList.length,
+                memoSubTitle: newmemoSubTitle,
+                memoContent: newmemoContent,
+              };
+            } else {
+              // 존재하지 않는 경우 새로운 메모 추가
+              noteBookList[updatedNoteIndex].memoList.push({
+                memoidx: 1,
+                memoSubTitle: newmemoSubTitle,
+                memoContent: newmemoContent,
+              });
+            }
             console.log("editor", memoList);
           }
 
-          console.log("loadSto[updatedNoteIndex]", loadSto[updatedNoteIndex]);
+          console.log("noteBookList[updatedNoteIndex]", noteBookList[updatedNoteIndex]);
 
           // 수정된 noteList로 로컬 스토리지 업데이트
-          if (loadSto[0].memoSubTitle !== "" || loadSto[0].memoContent !== "") {
-            localStorage.setItem("noteBookList", JSON.stringify(loadSto));
+          if (noteBookList[0].memoSubTitle !== "" || noteBookList[0].memoContent !== "") {
+            localStorage.setItem("noteBookList", JSON.stringify(noteBookList));
           }
         }
       }
@@ -154,7 +157,7 @@ export default function Editor({ selectedIdx, memoList, screenMode }: NoteEditor
   };
 
   return (
-    <div className="w-full  ">
+    <div className="w-full border-2">
       <div className="img-box flex justify-between p-2 bg-gray-100 dark:bg-gray-800 dark:border-b-[1px]">
         <div className="flex justify-around w-[500px] ">
           <button className="w-[24px] h-[24px]">
@@ -232,14 +235,12 @@ export default function Editor({ selectedIdx, memoList, screenMode }: NoteEditor
           />
         </button>
       </div>
-      <div className="w-full relative">
+      <div className="w-full h-[96%] relative">
         <LexicalComposer initialConfig={initialConfig}>
           <PlainTextPlugin
-            contentEditable={
-              <ContentEditable className="h-full p-4 border-r-2 border-b-2 focus:outline-none dark:bg-gray-800 dark:caret-white dark:text-white " />
-            }
+            contentEditable={<ContentEditable className="h-full p-4  focus:outline-none dark:bg-gray-800 dark:caret-white dark:text-white " />}
             placeholder={
-              <div className="absolute top-[18px] left-[18px] text-gray-400">
+              <div className="absolute top-[17px] left-[18px] text-gray-400">
                 Type / for menu or <span className="font-bold underline">select from Templates</span>
               </div>
             }

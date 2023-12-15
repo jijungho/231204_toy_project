@@ -10,11 +10,12 @@ interface Note {
   memoList: Array<{
     memoSubTitle: string;
     memoContent: string;
+    memoidx: number;
   }>;
 }
 
 interface AllNote {
-  selectedIdx: number;
+  selecNoteBookIdx: number;
   onClickNoteBookDetail: any;
   memoList: Note[];
   screenMode: string;

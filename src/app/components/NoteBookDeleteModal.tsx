@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function NoteDeleteModal({ closeDelModal, memoTitleDelete }: any) {
+export default function NoteBookDeleteModal({ closeDelModal, memoTitleDelete }: any) {
   return (
     <div className="w-full h-full">
       <div className="absolute top-0 w-full h-full bg-gray-500 opacity-30"></div>
