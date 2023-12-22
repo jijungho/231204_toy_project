@@ -1,25 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Image from "next/image";
 
 interface Note {
-  title: string;
   idx: number;
+  title: string;
   content: string;
-  subtitle: string;
-  memoList: Array<{
-    memoSubTitle: string;
-    memoContent: string;
-    memoidx: number;
-  }>;
 }
 
 interface NoteBookProps {
   isMenuOpen: boolean;
   onClickNoteBookDetail: any;
-  memoList: Note[];
+  noteBookList: Note[];
+  onClickOpenNoteAddModal: any;
 }
 
-export default function NoteBook({ isMenuOpen, onClickNoteBookDetail, memoList }: NoteBookProps) {
+export default function NoteBook({ isMenuOpen, onClickNoteBookDetail, noteBookList, onClickOpenNoteAddModal }: NoteBookProps) {
   return (
     <div
       id="notebookcompont"
@@ -27,7 +22,7 @@ export default function NoteBook({ isMenuOpen, onClickNoteBookDetail, memoList }
         isMenuOpen ? "" : "translatex-[-250px]"
       } transition-transform duration-500 ease-in-out z-3`}
     >
-      <div className="flex justify-between items-center bg-gray-100 h-[40px] border-gray-200 border-y-2 dark:bg-gray-800 ">
+      <div className="flex justify-between items-center bg-gray-100 h-[40px] border-gray-200 border-y-2  dark:bg-gray-800">
         <div className="left-menu h-[40px] flex items-center dark:text-white">
           <h2 className="ml-8 w-[130px] truncate">Notebooks</h2>
         </div>
@@ -56,15 +51,24 @@ export default function NoteBook({ isMenuOpen, onClickNoteBookDetail, memoList }
         </div>
       </div>
       <div className="w-full h-full">
-        <ul className="dark:text-white">
-          {memoList.map((item, idx) => (
-            <li key={idx} className="pl-4 border-b-2 h-[50px] hover:bg-gray-200 dark:border-b-[1px]">
-              <button className="w-full h-full flex items-center truncate " onClick={() => onClickNoteBookDetail(item.idx)}>
-                {item.title}
-              </button>
-            </li>
-          ))}
-        </ul>
+        {noteBookList.length === 0 ? (
+          <div className="w-full h-full flex flex-col items-center justify-center">
+            <p className="text-center text-gray-500 dark:text-white">You can organize notes of same topic into notebooks.</p>
+            <button className="mt-[8px] px-4 py-2 border-0 font-bold text-blue-400 hover:text-blue-700" onClick={onClickOpenNoteAddModal}>
+              Create New Notebook
+            </button>
+          </div>
+        ) : (
+          <ul className="dark:text-white">
+            {noteBookList.map((item, idx) => (
+              <li key={idx} className="pl-4 border-b-2 h-[50px] hover:bg-gray-200 dark:border-b-[1px]">
+                <button className="w-full h-full flex items-center truncate" onClick={() => onClickNoteBookDetail(item.idx)}>
+                  {item.title}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
