@@ -12,7 +12,7 @@ export default function NoteBookAddModal({ onClickCloseNoteAddModal }: any) {
 
   const onClickNoteCreate = () => {
     // 로컬 스토리지에서 저장된 메모 목록을 불러옵니다.
-    const savedNoteBook = JSON.parse(localStorage.getItem("NoteBookList") || "[]");
+    const savedNoteBook = JSON.parse(localStorage.getItem("NotebookList") || "[]");
     console.log(savedNoteBook);
     // 새로운 메모를 만듭니다.
     const newNoteBook: {
@@ -29,7 +29,7 @@ export default function NoteBookAddModal({ onClickCloseNoteAddModal }: any) {
     // 새로운 메모를 기존 메모 목록에 추가합니다.
     const updatedMemos = [newNoteBook, ...savedNoteBook];
     // 로컬 스토리지에 업데이트된 메모 목록을 저장합니다.
-    localStorage.setItem("NoteBookList", JSON.stringify(updatedMemos));
+    localStorage.setItem("NotebookList", JSON.stringify(updatedMemos));
     // localStorage.setItem("NoteBookNote", JSON.stringify(updatedMemos));
 
     onClickCloseNoteAddModal();

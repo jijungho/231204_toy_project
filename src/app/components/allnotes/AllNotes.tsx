@@ -8,13 +8,22 @@ interface Note {
   content: string;
 }
 
+interface NoteBook {
+  idx: number;
+  title: string;
+  noteList: Note[];
+}
+
 interface AllNote {
   onClickNoteBookDetail: any;
-  noteBookList: Note[];
+  noteBookList: NoteBook[];
   screenMode: string;
 }
 
 export default function AllNotes({ noteBookList, onClickNoteBookDetail, screenMode }: AllNote) {
+  // 모든 noteBook을 합친 배열
+  const AllNoteList = noteBookList.map((el) => el.noteList);
+
   return (
     <>
       <div className="flex justify-between items-center bg-gray-100 h-[40px]">
@@ -23,14 +32,14 @@ export default function AllNotes({ noteBookList, onClickNoteBookDetail, screenMo
       </div>
       <ul className="overflow-y-auto h-[100%]">
         {/* 모든 노트북이 아닌 모든 노트가 보여야함 */}
-        {noteBookList.map((notebook, idx) => (
+        {/* {AllNoteList.map((el, idx) => (
           <li key={idx} className={`hover:bg-blue-100 dark:hover:bg-gray-100 dark:text-white  ${subMainLi}`}>
-            <button className="w-full h-full dark:hover:text-black" onClick={() => onClickNoteBookDetail(notebook.idx)}>
+            <button className="w-full h-full dark:hover:text-black" onClick={() => onClickNoteBookDetail(el.idx)}>
               <h2 className="font-bold text-left text-[20px] truncate pb-6">{notebook.title ? notebook.title : "New Note"}</h2>
               <p className="truncate text-left">{notebook.content ? notebook.content : "No additional text"}</p>
             </button>
           </li>
-        ))}
+        ))} */}
       </ul>
     </>
   );

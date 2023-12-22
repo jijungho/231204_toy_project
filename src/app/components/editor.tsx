@@ -27,22 +27,31 @@ function MyCustomAutoFocusPlugin() {
 function onError(error: any) {
   console.error(error);
 }
+
 interface Note {
   idx: number;
   title: string;
   content: string;
 }
-interface EditorProps {
-  selectNoteBookIdx: number;
-  noteBookList: Note[];
+
+interface NoteBook {
+  idx: number;
+  title: string;
+  noteList: Note[];
 }
 
-export default function Editor({ selectNoteBookIdx, noteBookList }: EditorProps) {
-  const selectedNote = useMemo(() => noteBookList.find((item: Note) => item.idx === selectNoteBookIdx), [noteBookList, selectNoteBookIdx]);
+interface EditorProps {
+  noteBookList: NoteBook[];
+  selectedNoteBookIdx: number;
+  noteList: Note[];
+  selectedNoteIdx: number;
+}
 
+export default function Editor({ noteBookList, selectedNoteBookIdx, noteList, selectedNoteIdx }: EditorProps) {
   let CONTENT;
 
   // 애디터 초기 상태를 설정
+  //TODO: 에디터 초기화 진행 및 노트 선택 시 에디터가 변경되도록 해야함
   CONTENT = JSON.stringify({
     root: {
       children: [
@@ -53,7 +62,7 @@ export default function Editor({ selectNoteBookIdx, noteBookList }: EditorProps)
               format: 0,
               mode: "normal",
               style: "",
-              text: selectedNote?.content ? `${selectedNote.title}\n${selectedNote?.content}` : selectedNote?.title || selectedNote?.content || "",
+              text: noteList[selectedNoteIdx]?.title ? `${noteList[selectedNoteIdx].title}\n${noteList[selectedNoteIdx]?.content}` : "",
               type: "text",
               version: 1,
             },
@@ -72,6 +81,7 @@ export default function Editor({ selectNoteBookIdx, noteBookList }: EditorProps)
       version: 1,
     },
   });
+
   const initialConfig = {
     namespace: "MyEditor",
     theme,
@@ -88,31 +98,30 @@ export default function Editor({ selectNoteBookIdx, noteBookList }: EditorProps)
       if (root.__cachedText !== "") {
         const lines = root.__cachedText.split("\n");
 
-        const newmemoSubTitle = lines[0];
-        const newmemoContent = lines.slice(1).join("\n") ?? "";
+        const newNoteTitle = lines[0];
+        const newNoteContent = lines.slice(1).join("\n") ?? "";
 
-        if (selectedNote) {
-          const loadSto = JSON.parse(localStorage.getItem("NoteBookList") || "");
-
-          const updatedNoteIndex = loadSto.findIndex((note: Note) => note.idx === selectNoteBookIdx);
-
-          if (updatedNoteIndex !== -1) {
-            loadSto[updatedNoteIndex] = {
-              ...loadSto[updatedNoteIndex],
-              subtitle: newmemoSubTitle,
-              content: newmemoContent,
-            };
-          }
-
-          // 수정된 subtitle과 content를 NoteBookList로 로컬 스토리지 업데이트
-          if (loadSto[0].subTitle !== "" || loadSto[0].content !== "") {
-            localStorage.setItem("NoteBookNote", JSON.stringify(loadSto));
-            localStorage.setItem("NoteBookList", JSON.stringify(loadSto));
-          }
-
-          console.log("loadstr", loadSto[0]);
-          console.log("updatedNoteIndex", updatedNoteIndex);
-        }
+        localStorage.setItem(
+          "NotebookList",
+          JSON.stringify(
+            noteBookList.map((el) =>
+              el.idx === selectedNoteBookIdx
+                ? {
+                    ...el,
+                    noteList: noteList.map((el) =>
+                      el.idx === selectedNoteIdx
+                        ? {
+                            idx: el.idx,
+                            title: newNoteTitle,
+                            content: newNoteContent,
+                          }
+                        : el
+                    ),
+                  }
+                : el
+            )
+          )
+        );
       }
     });
   };

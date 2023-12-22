@@ -7,10 +7,16 @@ interface Note {
   content: string;
 }
 
+interface NoteBook {
+  idx: number;
+  title: string;
+  noteList: Note[];
+}
+
 interface NoteBookProps {
   isMenuOpen: boolean;
   onClickNoteBookDetail: any;
-  noteBookList: Note[];
+  noteBookList: NoteBook[];
   onClickOpenNoteAddModal: any;
 }
 

@@ -12,12 +12,19 @@ import NoteBook from "@/app/components/notebooks/NoteBook";
 import NoteBookDeleteModal from "../components/NoteBookDeleteModal";
 import NoteDetail from "../components/notebooks/NoteDetail";
 import ConfirmModal from "../components/ConfirmModal";
-interface NoteBook {
-  title: string;
+
+interface Note {
   idx: number;
+  title: string;
   content: string;
-  subtitle: string;
 }
+
+interface NoteBook {
+  idx: number;
+  title: string;
+  noteList: Note[];
+}
+
 export default function Page() {
   // 사이드 메뉴 클릭 상태 변수
   // const [isAllNotesVisible, setAllNotesVisible] = useState(true);
@@ -39,10 +46,14 @@ export default function Page() {
 
   // 메뉴 토글 상태 변수
   const [isMenuOpen, setIsMenuOpen] = useState(true);
-  // 노트북
-  const [noteBookList, setNoteBookList] = useState<NoteBook[]>([]);
+  // 노트북 List
+  const [noteBookList, setNoteBookList] = useState<NoteBook[]>(JSON.parse(localStorage.getItem("NotebookList") || "[]"));
   // 내가 선택한 노트북의 idx
-  const [selectNoteBookIdx, setSelectNoteBookIdx] = useState(0);
+  const [selectedNoteBookIdx, setSelectedNoteBookIdx] = useState(0);
+  // 노트 List
+  const [noteList, setNoteList] = useState<Note[]>([]);
+  // NoteIdx
+  const [selectedNoteIdx, setSelectedNoteIdx] = useState(0);
   // 다크모드 설정 상태 변수
   const [screenMode, SetScreenMode] = useState("nomal");
   // 메모 추가 모달 가시성 상태 변수
@@ -71,7 +82,7 @@ export default function Page() {
   // 로컬에 저장된 데이터를 반영해주는 useEffect 훅
   useEffect(() => {
     const loadMemoList = () => {
-      const titleList = JSON.parse(localStorage.getItem("NoteBookList") || "[]");
+      const titleList = JSON.parse(localStorage.getItem("NotebookList") || "[]");
       setNoteBookList(titleList);
     };
 
@@ -83,6 +94,12 @@ export default function Page() {
 
     return () => clearInterval(intervalId);
   }, []);
+
+  // NoteBookList의 NoteList
+  useEffect(() => {
+    setNoteList(noteBookList.find((el) => el.idx === selectedNoteBookIdx)?.noteList ?? []);
+  }, [noteBookList, selectedNoteBookIdx]);
+
   // 사이드 메뉴 클릭 시 상태 업데이트
   const onClickAllNotesMenu = () => {
     setIsAllNotesComponent(true);
@@ -91,6 +108,8 @@ export default function Page() {
     setIsUnsyncedComponent(false);
     setIsNoteBookComponent(false);
     setIsNoteBookDetailComponent(false);
+    setSelectedNoteBookIdx(0);
+    setSelectedNoteIdx(0);
   };
   // const onClickUncategoriedMenu = () => {
   //   setIsUncategoriedComponent(true);
@@ -123,6 +142,8 @@ export default function Page() {
     setIsTodoComponent(false);
     setIsAllNotesComponent(false);
     setIsNoteBookDetailComponent(false);
+    setSelectedNoteBookIdx(0);
+    setSelectedNoteIdx(0);
   };
   const onClickNoteBookDetail = (idx: any) => {
     setIsNoteBookDetailComponent(true);
@@ -132,8 +153,8 @@ export default function Page() {
     setIsTodoComponent(false);
     setIsAllNotesComponent(false);
 
-    setSelectNoteBookIdx(idx);
-    console.log(idx);
+    setSelectedNoteBookIdx(idx);
+    setSelectedNoteIdx(noteBookList.find((el) => el.idx)?.noteList?.[0]?.idx ?? 0);
   };
   // const handleAllNotesLinkClick = () => {
   // };
@@ -167,7 +188,7 @@ export default function Page() {
   const onClickNoteBookDelete = () => {
     const noteToDelete = JSON.parse(localStorage.getItem("DeleteNote") || "{}");
     const updatedMemoList = noteBookList.filter((memo) => memo.idx !== noteToDelete.idx);
-    localStorage.setItem("NoteBookList", JSON.stringify(updatedMemoList));
+    localStorage.setItem("NotebookList", JSON.stringify(updatedMemoList));
     setNoteBookList(updatedMemoList);
     onClickCloseNoteDelModal();
     // console.log(noteToDelete.id);
@@ -207,7 +228,31 @@ export default function Page() {
   }, []);
 
   // NewNote 생성 클릭 이벤트
-  const addNewNote = () => {};
+  const addNewNote = () => {
+    // 노트북 리스트가 없을 경우
+    if (noteBookList.length === 0) {
+      setIsConfirmModal(true);
+    } else {
+      // 선택한 노트북이 없을 경우
+      if (!selectedNoteBookIdx) {
+        alert("select NoteBook");
+      } else {
+        // 새로운 노트가 있을 경우
+        if (noteList.find((el) => !el.title && !el.content)) {
+        } else {
+          // 새로운 노트가 없을 경우
+          localStorage.setItem(
+            "NotebookList",
+            JSON.stringify(
+              noteBookList.map((el) =>
+                el.idx === selectedNoteBookIdx ? { ...el, noteList: [{ idx: noteList.length + 1, title: "", content: "" }, ...noteList] } : el
+              )
+            )
+          );
+        }
+      }
+    }
+  };
 
   return (
     <>
@@ -469,7 +514,11 @@ export default function Page() {
                 {isUnsyncedComponent ? <Unsynced /> : ""}
                 {isAllNotesComponent ? <AllNotes screenMode={screenMode} noteBookList={noteBookList} onClickNoteBookDetail={onClickNoteBookDetail} /> : ""}
                 {isNoteBookDetailComponent ? (
-                  <NoteDetail selectNoteBookIdx={selectNoteBookIdx} noteBookList={noteBookList} onClickNoteBookDetail={onClickNoteBookDetail} />
+                  <NoteDetail
+                    selectedNoteBooktitle={noteBookList.find((el) => el.idx === selectedNoteBookIdx)?.title ?? ""}
+                    noteList={noteList}
+                    setSelectedNoteIdx={setSelectedNoteIdx}
+                  />
                 ) : (
                   ""
                 )}
@@ -477,12 +526,10 @@ export default function Page() {
               {/* 에디터 */}
 
               {/* 선택한 노트에 따라 에디터가 변경 */}
-              {noteBookList.map((notebook, idx) =>
-                isNoteBookDetailComponent && selectNoteBookIdx === notebook.idx ? (
-                  <Editor key={idx} selectNoteBookIdx={selectNoteBookIdx} noteBookList={noteBookList} />
-                ) : (
-                  ""
-                )
+              {selectedNoteIdx ? (
+                <Editor noteBookList={noteBookList} selectedNoteBookIdx={selectedNoteBookIdx} noteList={noteList} selectedNoteIdx={selectedNoteIdx} />
+              ) : (
+                ""
               )}
               {/* {isAllNotesComponent ? <Editor selectNoteBookIdx={selectNoteBookIdx} noteBookList={noteBookList} /> : ""}
               {isUncategoriedComponent ? <Editor selectNoteBookIdx={selectNoteBookIdx} noteBookList={noteBookList} /> : ""}
