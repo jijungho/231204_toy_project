@@ -13,7 +13,6 @@ export default function NoteBookAddModal({ onClickCloseNoteAddModal }: any) {
   const onClickNoteCreate = () => {
     // 로컬 스토리지에서 저장된 메모 목록을 불러옵니다.
     const savedNoteBook = JSON.parse(localStorage.getItem("NotebookList") || "[]");
-    console.log(savedNoteBook);
     // 새로운 메모를 만듭니다.
     const newNoteBook: {
       idx: number;
@@ -33,8 +32,6 @@ export default function NoteBookAddModal({ onClickCloseNoteAddModal }: any) {
     // localStorage.setItem("NoteBookNote", JSON.stringify(updatedMemos));
 
     onClickCloseNoteAddModal();
-
-    console.log("newNoteBook", newNoteBook);
   };
 
   // iuput에 입력값이 없으면 create 버튼을 disabled로 변경
