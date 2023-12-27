@@ -51,7 +51,7 @@ interface EditorProps {
 export default function Editor({ noteBookList, selectedNoteBookIdx, noteList, selectedNoteIdx, screenMode }: EditorProps) {
   let CONTENT;
 
-  // noteList에서 idx 속성이 selectedNoteIdx와 일치하는 첫 번째 노트를 찾는 메소드
+  // noteList에서 idx 속성이 selectedNoteIdx와 일치하는 첫 번째 노트
   const selectNote = noteList.find((el) => el.idx === selectedNoteIdx);
 
   // 애디터 초기 상태를 설정
@@ -130,7 +130,7 @@ export default function Editor({ noteBookList, selectedNoteBookIdx, noteList, se
   };
 
   return (
-    <div className="w-full border-2">
+    <div className="w-full border-r-2 border-b-2">
       <div className="img-box flex justify-between p-2 bg-gray-100 dark:bg-gray-800 dark:border-b-[1px]">
         <div className="flex justify-around w-[500px] ">
           <button className="w-[24px] h-[24px]">
@@ -208,7 +208,7 @@ export default function Editor({ noteBookList, selectedNoteBookIdx, noteList, se
           />
         </button>
       </div>
-      <div className="w-full h-[96%]  relative">
+      <div className="w-full h-[93%] relative">
         <LexicalComposer initialConfig={initialConfig}>
           <PlainTextPlugin
             contentEditable={<ContentEditable className="h-full p-4  focus:outline-none dark:bg-gray-800 dark:caret-white dark:text-white " />}

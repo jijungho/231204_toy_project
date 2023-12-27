@@ -1,6 +1,5 @@
 export const NotoBookNaviBarOption = `
   px-[16px]
-  hover:bg-gray-100
 `;
 
 export const commonNaviBarOption = `

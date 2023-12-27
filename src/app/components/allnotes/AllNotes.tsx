@@ -32,14 +32,14 @@ export default function AllNotes({ noteBookList, onClickNoteBookDetail, screenMo
       </div>
       <ul className="overflow-y-auto h-[100%]">
         {/* 모든 노트북이 아닌 모든 노트가 보여야함 */}
-        {AllNoteList.map((note, idx) => (
+        {/* {AllNoteList.map((note, idx) => (
           <li key={idx} className={`hover:bg-blue-100 dark:hover:bg-gray-100 dark:text-white ${subMainLi}`}>
             <button className="w-full h-full dark:hover:text-black" onClick={() => onClickNoteBookDetail(note[0].idx)}>
               <h2 className="font-bold text-left text-[20px] truncate pb-6">{note[0].title ? note[0].title : "New Note"}</h2>
               <p className="truncate text-left">{note[0].content ? note[0].content : "No additional text"}</p>
             </button>
           </li>
-        ))}
+        ))} */}
       </ul>
     </>
   );

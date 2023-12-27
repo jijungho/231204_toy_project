@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { subMainLi } from "@/app/styles/style";
+import Editor from "../editor";
 
 interface Note {
   idx: number;
@@ -61,7 +62,7 @@ export default function NoteDetail({
   return (
     <>
       <div className="flex justify-between items-center bg-gray-100 h-[40px] border-b-2 dark:bg-gray-800 dark:border-b-[1px]">
-        {selectedNoteBooktitle ? <h2 className="ml-4 truncate dark:text-white">{selectedNoteBooktitle}</h2> : <h2 className="ml-4 truncate">Select a Note</h2>}
+        {selectedNoteBooktitle ? <h2 className="ml-4 truncate dark:text-white ">{selectedNoteBooktitle}</h2> : <h2 className="ml-4 truncate">Select a Note</h2>}
         <Image src={screenMode === "dark" ? "/img/darkmode/option-white.png" : "/img/option.png"} alt="option-img" className="mr-4 " width={24} height={24} />
       </div>
       <ul
@@ -88,7 +89,7 @@ export default function NoteDetail({
               >
                 <Image src="/img/delete.png" alt="delete-img" width={24} height={24} />
               </div>
-              <h2 className={`font-bold text-left text-[20px] truncate pb-6 ${selectedNoteIdx === el.idx ? "dark:text-black" : ""}`}>
+              <h2 className={`font-bold text-left text-[18px] truncate pb-6 ${selectedNoteIdx === el.idx ? "dark:text-black" : ""}`}>
                 {el.title ? el.title : "New Note"}
               </h2>
               <p className={`truncate text-left ${selectedNoteIdx === el.idx ? "dark:text-black" : ""}`}>{el.content ? el.content : "No additional text"}</p>
