@@ -38,12 +38,12 @@ export default function Page() {
   const [isTagsHover, setIsTagsHover] = useState(false);
 
   // 사이드 메뉴 링크
-  const [isAllNotesComponent, setIsAllNotesComponent] = useState(false);
+  const [isAllNotesComponent, setIsAllNotesComponent] = useState(true);
   const [isUncategoriedComponent, setIsUncategoriedComponent] = useState(false);
   const [isTodoComponent, setIsTodoComponent] = useState(false);
   const [isUnsyncedComponent, setIsUnsyncedComponent] = useState(false);
   const [isNoteBookComponent, setIsNoteBookComponent] = useState(false);
-  const [isNoteDetailComponent, setIsNoteDetailComponent] = useState(true);
+  const [isNoteDetailComponent, setIsNoteDetailComponent] = useState(false);
 
   // 메뉴 토글 상태 변수
   const [isMenuOpen, setIsMenuOpen] = useState(true);
@@ -376,6 +376,10 @@ export default function Page() {
                             height={24}
                           />
                           All Notes
+                          {/* 모든 노트북안에 있는 노트의 개수 */}
+                          <span className="text-gray-400 text-[15px] ml-2">
+                            {noteBookList.reduce((total, notebook) => total + notebook.noteList.length, 0)}
+                          </span>
                         </div>
                       </li>
                       <li style={AllNotesMenu} className="  py-2 px-6 h-[40px] items-center hover:bg-gray-100 dark:hover:text-black">
@@ -518,7 +522,11 @@ export default function Page() {
                 {isUncategoriedComponent ? <Uncategorized /> : ""}
                 {isTodoComponent ? <Todo /> : ""}
                 {isUnsyncedComponent ? <Unsynced /> : ""}
-                {isAllNotesComponent ? <AllNotes screenMode={screenMode} noteBookList={noteBookList} onClickNoteBookDetail={onClickNoteBookDetail} /> : ""}
+                {isAllNotesComponent ? (
+                  <AllNotes screenMode={screenMode} noteBookList={noteBookList} noteList={noteList} onClickNoteBookDetail={onClickNoteBookDetail} />
+                ) : (
+                  ""
+                )}
                 {isNoteDetailComponent ? (
                   <NoteDetail
                     selectedNoteBooktitle={noteBookList.find((el) => el.idx === selectedNoteBookIdx)?.title ?? ""}

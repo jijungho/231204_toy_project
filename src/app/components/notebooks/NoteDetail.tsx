@@ -89,10 +89,12 @@ export default function NoteDetail({
               >
                 <Image src="/img/delete.png" alt="delete-img" width={24} height={24} />
               </div>
-              <h2 className={`font-bold text-left text-[18px] truncate pb-6 ${selectedNoteIdx === el.idx ? "dark:text-black" : ""}`}>
+              <h2 className={`font-bold text-left text-[18px] truncate pb-6  ${selectedNoteIdx === el.idx ? "dark:text-black" : "dark:text-white"}`}>
                 {el.title ? el.title : "New Note"}
               </h2>
-              <p className={`truncate text-left ${selectedNoteIdx === el.idx ? "dark:text-black" : ""}`}>{el.content ? el.content : "No additional text"}</p>
+              <p className={`truncate text-left  ${selectedNoteIdx === el.idx ? "dark:text-black" : "dark:text-white"}`}>
+                {el.content ? el.content : "No additional text"}
+              </p>
             </button>
           </li>
         ))}
