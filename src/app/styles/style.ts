@@ -16,3 +16,8 @@ export const subMainLi = `
   b-2
   px-4
 `;
+
+export const mainPageLi = `
+p-3
+bg-slate-500 text-white text-lg
+`;
