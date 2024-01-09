@@ -1,5 +1,4 @@
 export const NotoBookNaviBarOption = `
-  px-[16px]
 `;
 
 export const commonNaviBarOption = `

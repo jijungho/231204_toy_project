@@ -13,6 +13,7 @@ import NoteBookDeleteModal from "./modal/NoteBookDeleteModal";
 import NoteDetail from "./notebooks/NoteDetail";
 import ConfirmModal from "./modal/ConfirmModal";
 import NoteBookSelectModal from "./modal/NoteBookSelectModal";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
 
 interface Note {
   idx: number;
@@ -258,7 +259,7 @@ export default function MainNote() {
   return (
     <>
       <div
-        className={`min-w-[1400px] max-w-[1920px] h-[100vh] dark:bg-gray-800  ${isNoteAddModal ? "blur-sm" : ""} || ${
+        className={`min-w-[1400px] max-w-[1920px] h-[950px] dark:bg-gray-800  ${isNoteAddModal ? "blur-sm" : ""} || ${
           isNoteBookDeleteModal ? "blur-sm" : ""
         } || ${isConfirmModal ? "blur-sm" : ""} || ${isNotebookSelectModal ? "blur-sm" : ""}`}
       >
@@ -343,11 +344,11 @@ export default function MainNote() {
             </ul>
           </div>
         </div>
-        <main id="noteBook" className="flex min-w-[1400px] max-w-[1920px] h-full">
-          <aside id="sideNavBar" className="w-[250px] h-full border-gray-200 border-r-2  border-b-2 dark:bg-gray-800 ">
+        <main id="noteBook" className="flex min-w-[1400px] max-w-[1920px]  border-b-2">
+          <aside id="sideNavBar" className="w-[200px] h-[950px] border-r-2 border-gray-200 dark:bg-gray-800 ">
             <div className="flex h-full">
               <nav className="flex">
-                <ul className="w-[250px]">
+                <ul className="w-[200px]">
                   <li className="w-full">
                     <ul className="flex justify-center flex-col dark:text-white">
                       <li onClick={onClickAllNotesMenu} className="flex items-center h-[40px] hover:bg-gray-100">
@@ -381,19 +382,19 @@ export default function MainNote() {
                           </span>
                         </div>
                       </li>
-                      <li style={AllNotesMenu} className="  py-2 px-6 h-[40px] items-center hover:bg-gray-100 dark:hover:text-black">
+                      <li style={AllNotesMenu} className="py-2 px-6 h-[40px] items-center hover:bg-gray-100 dark:hover:text-black">
                         <button onClick={onClickUncategoriedMenu} className={` ${commonNaviBarOption}`}>
-                          <Image src="/img/filte.png" alt="uncategorized-img" className="mr-[8px] h-[100%]" width={24} height={24} />
+                          <Image src="/img/filte.png" alt="uncategorized-img" className="mr-[8px] w-[24px] h-[24px]" width={24} height={24} />
                           Uncategorized
                         </button>
                       </li>
-                      <li style={AllNotesMenu} className="  py-2 px-6 h-[40px] items-center hover:bg-gray-100 dark:hover:text-black">
+                      <li style={AllNotesMenu} className="py-2 px-6 h-[40px] items-center hover:bg-gray-100 dark:hover:text-black">
                         <button onClick={onClickTodoMenu} className={commonNaviBarOption}>
                           <Image src="/img/check.png" alt="todo-img" className="mr-[8px]" width={24} height={24} />
                           Todo
                         </button>
                       </li>
-                      <li style={AllNotesMenu} className="  py-2 px-6 h-[40px] items-center hover:bg-gray-100 dark:hover:text-black">
+                      <li style={AllNotesMenu} className="py-2 px-6 h-[40px] items-center hover:bg-gray-100 dark:hover:text-black">
                         <button onClick={onClickUnsyncedMenu} className={commonNaviBarOption}>
                           <Image src="/img/cloud-off.png" alt="unsynced-img" className="mr-[8px]" width={24} height={24} />
                           Unsynced
@@ -425,7 +426,7 @@ export default function MainNote() {
                           NOTEBOOKS
                         </button>
                         {/* 메모 추가 버튼 */}
-                        <button onClick={onClickOpenNoteAddModal} className="group flex items-center relative left-[91.5px]">
+                        <button onClick={onClickOpenNoteAddModal} className="group flex items-center relative left-[40px]">
                           <Image
                             src={screenMode === "dark" ? "/img/darkmode/plus-white.png" : "/img/plus-blue.png"}
                             alt={screenMode === "dark" ? "plus-white-img" : "plus-blue-img"}
@@ -446,24 +447,30 @@ export default function MainNote() {
                       </li>
                       {/* 새로 추가된 노트북이 저장되야함 */}
                       {noteBookList.map((notebook, idx) => (
-                        <li
-                          key={idx}
-                          className={`py-2 pl-6 pr-4 h-[40px] justify-between relative ${selectedNoteBookIdx === notebook.idx ? "bg-gray-200" : ""}`}
-                        >
-                          <button
-                            onClick={() => {
-                              setSelectedNoteBookIdx(notebook.idx);
-                              onClickNoteBookDetail(notebook.idx);
-                            }}
-                            className={`truncate cursor-pointer text-left w-full ${NotoBookNaviBarOption}`}
-                          >
-                            <h2 className="inline-block">{notebook.title}</h2>
-                            <span className="text-gray-400 text-[15px] ml-2">({notebook.noteList.length})</span>
-                          </button>
-                          <button className="absolute top-1.5 right-3" onClick={() => onClickOpenNoteBookDelModal(notebook.idx)}>
-                            <Image src="/img/delete.png" alt="delete-img" width={24} height={24} />
-                          </button>
-                        </li>
+                        <ContextMenu key={idx}>
+                          <ContextMenuTrigger>
+                            <li className={`py-2 pl-6 pr-4 h-[40px] justify-between relative ${selectedNoteBookIdx === notebook.idx ? "bg-gray-200" : ""}`}>
+                              <button
+                                onClick={() => {
+                                  setSelectedNoteBookIdx(notebook.idx);
+                                  onClickNoteBookDetail(notebook.idx);
+                                }}
+                                className={`truncate cursor-pointer text-left w-[120px] ${NotoBookNaviBarOption}`}
+                              >
+                                <h2 className="inline">{notebook.title}</h2>
+                              </button>
+                              <span className="text-gray-400 text-[15px]">({notebook.noteList.length})</span>
+                            </li>
+                          </ContextMenuTrigger>
+                          <ContextMenuContent>
+                            <ContextMenuItem>
+                              <button onClick={() => onClickOpenNoteBookDelModal(notebook.idx)}>
+                                {/* <Image src="/img/delete.png" alt="delete-img" width={24} height={24} /> */}
+                                <span className="text-red-500">Delete</span>
+                              </button>
+                            </ContextMenuItem>
+                          </ContextMenuContent>
+                        </ContextMenu>
                       ))}
                     </ul>
                   </li>
@@ -517,11 +524,21 @@ export default function MainNote() {
                 isMenuOpen ? "" : "translate-x-[-250px]"
               } transition-transform duration-1000 ease-in-out z-3 bg-white w-full flex dark:bg-gray-800`}
             >
-              <aside id="subMain" className="min-w-[180px] max-w-[180px] border-b-2 border-r-2 border-bg-gray-200">
+              <aside id="subMain" className="min-w-[180px] max-w-[180px] h-[950px] border-r-2 border-bg-gray-200">
                 {isUncategoriedComponent ? <Uncategorized /> : ""}
                 {isTodoComponent ? <Todo /> : ""}
                 {isUnsyncedComponent ? <Unsynced /> : ""}
-                {isAllNotesComponent ? <AllNotes screenMode={screenMode} noteBookList={noteBookList} onClickNoteBookDetail={onClickNoteBookDetail} /> : ""}
+                {isAllNotesComponent ? (
+                  <AllNotes
+                    screenMode={screenMode}
+                    noteBookList={noteBookList}
+                    noteList={noteList}
+                    selectedNoteBookIdx={selectedNoteBookIdx}
+                    onClickNoteBookDetail={onClickNoteBookDetail}
+                  />
+                ) : (
+                  ""
+                )}
                 {isNoteDetailComponent ? (
                   <NoteDetail
                     selectedNoteBooktitle={noteBookList.find((el) => el.idx === selectedNoteBookIdx)?.title ?? ""}

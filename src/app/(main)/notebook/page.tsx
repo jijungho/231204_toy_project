@@ -1,7 +1,7 @@
 import React from "react";
 import MainNote from "./components/MainNote";
 
-const page = () => {
+const NotebookPage = () => {
   return (
     <div className="">
       <MainNote />
@@ -9,4 +9,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default NotebookPage;

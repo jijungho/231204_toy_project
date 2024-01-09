@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { subMainLi } from "@/app/styles/style";
-import Editor from "../editor/editor";
 
 interface Note {
   idx: number;
@@ -84,12 +83,13 @@ export default function NoteDetail({
 
   return (
     <>
-      <div className="flex justify-between items-center bg-gray-100 h-[40px] border-b-2 dark:bg-gray-800 dark:border-b-[1px]">
+      <div className="flex justify-between items-center bg-gray-100 h-[40px]  dark:bg-gray-800 dark:border-b-[1px]">
         {selectedNoteBooktitle ? <h2 className="ml-4 truncate dark:text-white ">{selectedNoteBooktitle}</h2> : <h2 className="ml-4 truncate">Select a Note</h2>}
         <Image src={screenMode === "dark" ? "/img/darkmode/option-white.png" : "/img/option.png"} alt="option-img" className="mr-4 " width={24} height={24} />
       </div>
       <ul
-        className="overflow-hidden h-[96%] 
+        className="overflow-hidden h-[910px]
+        border-b-2
         scrollbar-thumb-gray-500 
         scrollbar-track-gray-100 
         scrollbar-thumb-rounded-full 
@@ -118,7 +118,6 @@ export default function NoteDetail({
               <p className={`truncate text-left  ${selectedNoteIdx === el.idx ? "dark:text-black" : "dark:text-white"}`}>
                 {el.content ? el.content : "No additional text"}
               </p>
-              <p className="text-left text-sm text-gray-500">{el.updatedAt ? el.updatedAt : formatDate(today)}</p>
             </button>
           </li>
         ))}
