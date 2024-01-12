@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Spider";
+  font-weight: 500;
+  src: url("./styles/font/HOMOARAK.TTF") format("truetype");
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -20,4 +26,12 @@ html,
 body,
 :root {
   height: 100%;
+}
+
+#main {
+  font-family: "Spider";
+}
+
+.font-spider {
+  font-family: "Spider";
 }

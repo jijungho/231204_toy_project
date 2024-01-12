@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { NotoBookNaviBarOption, commonNaviBarOption } from "@/app/styles/style";
 import AllNotes from "./allnotes/AllNotes";
@@ -462,11 +462,11 @@ export default function MainNote() {
                               <span className="text-gray-400 text-[15px]">({notebook.noteList.length})</span>
                             </li>
                           </ContextMenuTrigger>
-                          <ContextMenuContent>
-                            <ContextMenuItem>
-                              <button onClick={() => onClickOpenNoteBookDelModal(notebook.idx)}>
+                          <ContextMenuContent className="bg-white">
+                            <ContextMenuItem className="w-full text-red-500 hover:bg-red-500 rounded-md hover:text-white">
+                              <button className="w-full" onClick={() => onClickOpenNoteBookDelModal(notebook.idx)}>
                                 {/* <Image src="/img/delete.png" alt="delete-img" width={24} height={24} /> */}
-                                <span className="text-red-500">Delete</span>
+                                <span className="">Delete</span>
                               </button>
                             </ContextMenuItem>
                           </ContextMenuContent>

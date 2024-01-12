@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { subMainLi } from "@/app/styles/style";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
 
 interface Note {
   idx: number;
@@ -101,25 +102,28 @@ export default function NoteDetail({
         hover:dark:scrollbar-thumb-rounded-full"
       >
         {noteList.map((el, idx) => (
-          <li key={idx} className={`${subMainLi} ${selectedNoteIdx === el.idx ? "bg-blue-100 dark:bg-gray-100 dark:text-black" : ""}`}>
-            <button className={`w-full h-full  ${selectedNoteIdx === el.idx ? "dark:text-white" : "text-black"}`} onClick={() => handleNoteIdx(el.idx)}>
-              <div
-                className="float-right"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onClickDeleteNote(el.idx);
-                }}
-              >
-                <Image src="/img/delete.png" alt="delete-img" width={24} height={24} />
-              </div>
-              <h2 className={`font-bold text-left text-[18px] truncate pb-6  ${selectedNoteIdx === el.idx ? "dark:text-black" : "dark:text-white"}`}>
-                {el.title ? el.title : "New Note"}
-              </h2>
-              <p className={`truncate text-left  ${selectedNoteIdx === el.idx ? "dark:text-black" : "dark:text-white"}`}>
-                {el.content ? el.content : "No additional text"}
-              </p>
-            </button>
-          </li>
+          <ContextMenu key={idx}>
+            <ContextMenuTrigger>
+              <li key={idx} className={`${subMainLi} ${selectedNoteIdx === el.idx ? "bg-blue-100 dark:bg-gray-100 dark:text-black" : ""}`}>
+                <button className={`w-full h-full  ${selectedNoteIdx === el.idx ? "dark:text-white" : "text-black"}`} onClick={() => handleNoteIdx(el.idx)}>
+                  <h2 className={`font-bold text-left text-[18px] truncate pb-6  ${selectedNoteIdx === el.idx ? "dark:text-black" : "dark:text-white"}`}>
+                    {el.title ? el.title : "New Note"}
+                  </h2>
+                  <p className={`truncate text-left  ${selectedNoteIdx === el.idx ? "dark:text-black" : "dark:text-white"}`}>
+                    {el.content ? el.content : "No additional text"}
+                  </p>
+                </button>
+              </li>
+            </ContextMenuTrigger>
+            <ContextMenuContent className="bg-white">
+              <ContextMenuItem className="w-full text-red-500 hover:bg-red-500 rounded-md hover:text-white">
+                <button className="w-full" onClick={() => onClickDeleteNote(el.idx)}>
+                  {/* <Image src="/img/delete.png" alt="delete-img" width={24} height={24} /> */}
+                  <span className="">Delete</span>
+                </button>
+              </ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
         ))}
       </ul>
     </>
